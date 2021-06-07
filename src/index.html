@@ -24,7 +24,7 @@
 <body>
 <div id="app"></div>
 <script>
-  VueView.boot(new VueView.Application({
+  VueView.boot({
     el: document.getElementById('app'),
     root: '/apps/home',
     routes: function (resolve) {
@@ -38,7 +38,7 @@
 
       resolve(Route.create())
     }
-  }));
+  });
 </script>
 </body>
 </html>
