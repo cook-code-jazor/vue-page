@@ -819,7 +819,8 @@
     // 	throw 'no bootstrap';
     // }
     this.options = options = options || {}
-    options.componentExtension = options.componentExtension || '.html'
+    options.componentExtension = options.componentExtension || '.vue'
+    options.viewPath = options.viewPath || '';
 
     var root = options.root
 
