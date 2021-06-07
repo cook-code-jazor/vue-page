@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VuePage</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <meta charset="utf-8"/>
+    <script>
+      less = {
+        onReady: false
+      }
+    </script>
+  <script type="text/javascript" src="vendor/json3.min.js"></script>
+  <script type="text/javascript" src="vendor/promise.min.js"></script>
+  <script type="text/javascript" src="vendor/less/less.min.js"></script>
+  <script type="text/javascript" src="vendor/axios.min.js"></script>
+  <script type="text/javascript" src="vendor/vue.min.js"></script>
+
+  <script type="text/javascript" src="vue-page.js"></script>
+  <script type="text/javascript" src="vue-page-utils.js"></script>
+  <script type="text/javascript" src="vue-page-route-creator.js"></script>
+
+</head>
+<body>
+<div id="app"></div>
+<script>
+  VueView.boot(new VueView.Application({
+    el: document.getElementById('app'),
+    componentExtension: '.vue',
+    root: '/apps/home',
+    mode: 'history',
+    viewPath: 'views',
+    routes: 'routes.js'
+  }));
+</script>
+</body>
+</html>
