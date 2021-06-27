@@ -12,71 +12,17 @@
   window.VueView = factory()
 }(this || window, function() {
   'use strict'
-  var path2regexp = (function() { var c = '/'; var d = './'; var j = new RegExp(['(\\\\.)', '(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?'].join('|'), 'g'); function i(M, E) { var N = []; var x = 0; var v = 0; var G = ''; var q = (E && E.delimiter) || c; var s = (E && E.delimiters) || d; var H = false; var L; while ((L = j.exec(M)) !== null) { var y = L[0]; var t = L[1]; var C = L.index; G += M.slice(v, C); v = C + y.length; if (t) { G += t[1]; H = true; continue } var J = ''; var B = M[v]; var A = L[2]; var p = L[3]; var u = L[4]; var z = L[5]; if (!H && G.length) { var w = G.length - 1; if (s.indexOf(G[w]) > -1) { J = G[w]; G = G.slice(0, w) } } if (G) { N.push(G); G = ''; H = false } var F = J !== '' && B !== undefined && B !== J; var K = z === '+' || z === '*'; var D = z === '?' || z === '*'; var r = J || q; var I = p || u; N.push({ name: A || x++, prefix: J, delimiter: r, optional: D, repeat: K, partial: F, pattern: I ? e(I) : '[^' + f(r) + ']+?' }) } if (G || v < M.length) { N.push(G + M.substr(v)) } return N } function b(q, p) { return n(i(q, p)) } function n(r) { var q = new Array(r.length); for (var p = 0; p < r.length; p++) { if (typeof r[p] === 'object') { q[p] = new RegExp('^(?:' + r[p].pattern + ')$') } } return function(s, w) { var x = ''; var t = (w && w.encode) || encodeURIComponent; for (var u = 0; u < r.length; u++) { var z = r[u]; if (typeof z === 'string') { x += z; continue } var A = s ? s[z.name] : undefined; var y; if (Array.isArray(A)) { if (!z.repeat) { throw new TypeError('Expected "' + z.name + '" to not repeat, but got array') } if (A.length === 0) { if (z.optional) { continue } throw new TypeError('Expected "' + z.name + '" to not be empty') } for (var v = 0; v < A.length; v++) { y = t(A[v], z); if (!q[u].test(y)) { throw new TypeError('Expected all "' + z.name + '" to match "' + z.pattern + '"') }x += (v === 0 ? z.prefix : z.delimiter) + y } continue } if (typeof A === 'string' || typeof A === 'number' || typeof A === 'boolean') { y = t(String(A), z); if (!q[u].test(y)) { throw new TypeError('Expected "' + z.name + '" to match "' + z.pattern + '", but got "' + y + '"') }x += z.prefix + y; continue } if (z.optional) { if (z.partial) { x += z.prefix } continue } throw new TypeError('Expected "' + z.name + '" to be ' + (z.repeat ? 'an array' : 'a string')) } return x } } function f(p) { return p.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1') } function e(p) { return p.replace(/([=!:$/()])/g, '\\$1') } function h(p) { return p && p.sensitive ? '' : 'i' } function l(s, r) { if (!r) { return s } var p = s.source.match(/\((?!\?)/g); if (p) { for (var q = 0; q < p.length; q++) { r.push({ name: q, prefix: null, delimiter: null, optional: false, repeat: false, partial: false, pattern: null }) } } return s } function a(t, q, r) { var s = []; for (var p = 0; p < t.length; p++) { s.push(k(t[p], q, r).source) } return new RegExp('(?:' + s.join('|') + ')', h(r)) } function m(r, p, q) { return o(i(r, q), p, q) } function o(C, w, x) { x = x || {}; var A = x.strict; var s = x.end !== false; var q = f(x.delimiter || c); var r = x.delimiters || d; var t = [].concat(x.endsWith || []).map(f).concat('$').join('|'); var z = ''; var v = false; for (var u = 0; u < C.length; u++) { var B = C[u]; if (typeof B === 'string') { z += f(B); v = u === C.length - 1 && r.indexOf(B[B.length - 1]) > -1 } else { var y = f(B.prefix); var p = B.repeat ? '(?:' + B.pattern + ')(?:' + y + '(?:' + B.pattern + '))*' : B.pattern; if (w) { w.push(B) } if (B.optional) { if (B.partial) { z += y + '(' + p + ')?' } else { z += '(?:' + y + '(' + p + '))?' } } else { z += y + '(' + p + ')' } } } if (s) { if (!A) { z += '(?:' + q + ')?' }z += t === '$' ? '$' : '(?=' + t + ')' } else { if (!A) { z += '(?:' + q + '(?=' + t + '))?' } if (!v) { z += '(?=' + q + '|' + t + ')' } } return new RegExp('^' + z, h(x)) } function k(r, p, q) { if (r instanceof RegExp) { return l(r, p) } if (Array.isArray(r)) { return a((r), p, q) } return m((r), p, q) } var g = k; g.parse = i; g.compile = b; g.tokensToFunction = n; g.tokensToRegExp = o; return g })()
+  var path2regexp = (function() { var c = '/'; var d = './'; var j = new RegExp(['(\\\\.)', '(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?'].join('|'), 'g'); function i(M, E) { var N = []; var x = 0; var v = 0; var G = ''; var q = (E && E.delimiter) || c; var s = (E && E.delimiters) || d; var H = false; var L; while ((L = j.exec(M)) !== null) { var y = L[0]; var t = L[1]; var C = L.index; G += M.slice(v, C); v = C + y.length; if (t) { G += t[1]; H = true; continue } var J = ''; var B = M[v]; var A = L[2]; var p = L[3]; var u = L[4]; var z = L[5]; if (!H && G.length) { var w = G.length - 1; if (s.indexOf(G[w]) > -1) { J = G[w]; G = G.slice(0, w) } } if (G) { N.push(G); G = ''; H = false } var F = J !== '' && B !== undefined && B !== J; var K = z === '+' || z === '*'; var D = z === '?' || z === '*'; var r = J || q; var I = p || u; N.push({ name: A || x++, prefix: J, delimiter: r, optional: D, repeat: K, partial: F, pattern: I ? e(I) : '[^' + f(r) + ']+?' }) } if (G || v < M.length) { N.push(G + M.substr(v)) } return N } function b(q, p) { return n(i(q, p)) } function n(r) { var q = new Array(r.length); for (var p = 0; p < r.length; p++) { if (typeof r[p] === 'object') { q[p] = new RegExp('^(?:' + r[p].pattern + ')$') } } return function(s, w) { var x = ''; var t = (w && w.encode) || encodeURIComponent; for (var u = 0; u < r.length; u++) { var z = r[u]; if (typeof z === 'string') { x += z; continue } var A = s ? s[z.name] : undefined; var y; if (Array.isArray(A)) { if (!z.repeat) { throw new TypeError('Expected "' + z.name + '" to not repeat, but got array') } if (A.length === 0) { if (z.optional) { continue } throw new TypeError('Expected "' + z.name + '" to not be empty') } for (var v = 0; v < A.length; v++) { y = t(A[v], z); if (!q[u].test(y)) { throw new TypeError('Expected all "' + z.name + '" to match "' + z.pattern + '"') }x += (v === 0 ? z.prefix : z.delimiter) + y } continue } if (typeof A === 'string' || typeof A === 'number' || typeof A === 'boolean') { y = t(String(A), z); if (!q[u].test(y)) { throw new TypeError('Expected "' + z.name + '" to match "' + z.pattern + '", but got "' + y + '"') }x += z.prefix + y; continue } if (z.optional) { if (z.partial) { x += z.prefix } continue } throw new TypeError('Expected "' + z.name + '" to be ' + (z.repeat ? 'an array' : 'a string')) } return x } } function f(p) { return p.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1') } function e(p) { return p.replace(/([=!:$/()])/g, '\\$1') } function h(p) { return p && p.sensitive ? '' : 'i' } function l(s, r) { if (!r) { return s } var p = s.source.match(/\((?!\?)/g); if (p) { for (var q = 0; q < p.length; q++) { r.push({ name: q, prefix: null, delimiter: null, optional: false, repeat: false, partial: false, pattern: null }) } } return s } function a(t, q, r) { var s = []; for (var p = 0; p < t.length; p++) { s.push(k(t[p], q, r).source) } return new RegExp('(?:' + s.join('|') + ')', h(r)) } function m(r, p, q) { return o(i(r, q), p, q) } function o(C, w, x) { x = x || {}; var A = x.strict; var s = x.end !== false; var q = f(x.delimiter || c); var r = x.delimiters || d; var t = [].concat(x.endsWith || []).map(f).concat('$').join('|'); var z = ''; var v = false; for (var u = 0; u < C.length; u++) { var B = C[u]; if (typeof B === 'string') { z += f(B); v = u === C.length - 1 && r.indexOf(B[B.length - 1]) > -1 } else { var y = f(B.prefix); var p = B.repeat ? '(?:' + B.pattern + ')(?:' + y + '(?:' + B.pattern + '))*' : B.pattern; if (w) { w.push(B) } if (B.optional) { if (B.partial) { z += y + '(' + p + ')?' } else { z += '(?:' + y + '(' + p + '))?' } } else { z += y + '(' + p + ')' } } } if (s) { if (!A) { z += '(?:' + q + ')?' }z += t === '$' ? '$' : '(?=' + t + ')' } else { if (!A) { z += '(?:' + q + '(?=' + t + '))?' } if (!v) { z += '(?=' + q + '|' + t + ')' } } return new RegExp('^' + z, h(x)) } function k(r, p, q) { if (r instanceof RegExp) { return l(r, p) } if (Array.isArray(r)) { return a((r), p, q) } return m((r), p, q) } var g = k; g.parse = i; g.compile = b; g.tokensToFunction = n; g.tokensToRegExp = o; return g })();
+  
+  var qs=window["$qs"]=window.qs||(function(){function c(g){if(!g||typeof g!=="string"){return""}return encodeURIComponent(g).replace(/\+/g,"%2B")}function d(g){if(!g){throw new Error("unknown type")}return g.replace(/\[object (.+?)\]/,"$1").toLowerCase()}function f(h,n,k){if(n===null||n===undefined){return""}var l=toString.call(n);var m=d(l);switch(m){case"number":case"boolean":k.push(h+"="+c(n.toString()));return;case"array":for(var g=0;g<n.length;g++){f(h+"["+g+"]",n[g],k)}return;case"object":for(var j in n){if(!n.hasOwnProperty(j)){continue}f(h+"["+j+"]",n[j],k)}return;case"string":k.push(h+"="+c(n))}}function b(i){var h=[];for(var g in i){if(!hasOwnProperty(i,g)){continue}f(g,i[g],h)}return h.join("&")}function a(k,j){var h=k.indexOf("=");if(h===-1){return false}var i=k.substr(0,h);if(!i){return false}var l=k.substr(h);if(l.length===1){j[i]="";return true}l=l.substr(1);try{j[i]=decodeURIComponent(l)}catch(g){j[i]=l}return true}function e(j){var i={};var g=j.indexOf("&");var h;while(g>=0){h=a(j.substr(0,g),i);if(!h){continue}j=j.substr(g+1);g=j.indexOf("&")}if(g===-1){a(j,i)}return i}return{parse:e,stringify:b}})();
+  
+  (function(){if(!Function.prototype.bind){Function.prototype.bind=function(c){var d=this;return function(){return d.apply(c||null,arguments)}}}if(!String.prototype.startsWith){String.prototype.startsWith=function b(d,c){if(!d){return false}c=c||0;return this.slice(c,c+d.length)===d};String.prototype.endsWith=function a(d,c){if(!d){return false}if(c===undefined){return this.slice(this.length-d.length)===d}return this.slice(c-d.length,c)===d}}if(!Object.keys){Object.keys=function(f){if(!f){return[]}var e=[];if(f instanceof Array){for(var c=0;c<f.length;c++){e.push(c)}}else{if(typeof f==="object"){for(var d in f){if(!hasOwnProperty(f,d)){continue}e.push(d)}}}return e}}if(!Object.merge){Object.merge=function(c,e){if(!e){return c}for(var d in e){if(!hasOwnProperty(e,d)){continue}c[d]=e[d]}return c}}if(!Array.prototype.forEach){Array.prototype.forEach=function(c){if(!c){return}for(var d=0;d<this.length;d++){c.call(this,this[d],d,this)}}}})();
 
-  if (!Function.prototype.bind) {
-    Function.prototype.bind = function(context) {
-      var that = this
-      return function() {
-        return that.apply(context || null, arguments)
-      }
-    }
-  }
-  if (!String.prototype.startsWith) {
-    String.prototype.startsWith = function startsWith(search, position) {
-      if (!search) return false
-      position = position || 0
-      return this.slice(position, position + search.length) === search
-    }
-    String.prototype.endsWith = function endsWith(search, endPosition) {
-      if (!search) return false
-      if (endPosition === undefined) {
-        return this.slice(this.length - search.length) === search
-      }
-      return this.slice(endPosition - search.length, endPosition) === search
-    }
-  }
-  if (!Object.keys) {
-    Object.keys = function(source) {
-      if (!source) return []
-      var result = []
-      if (source instanceof Array) {
-        for (var i = 0; i < source.length; i++) {
-          result.push(i)
-        }
-      } else if (typeof source === 'object') {
-        for (var key in source) {
-          if (!hasOwnProperty(source, key)) continue
-          result.push(key)
-        }
-      }
-      return result
-    }
-  }
-  if (!Object.merge) {
-    Object.merge = function (dest, source) {
-      if (!source) {
-        return dest
-      }
-      for (var key in source) {
-        if (!hasOwnProperty(source, key)) continue
-        dest[key] = source[key]
-      }
-      return dest
-    }
-  }
-  if (!Array.prototype.forEach) {
-    Array.prototype.forEach = function(cb) {
-      if (!cb) return
-      for (var i = 0; i < this.length; i++) {
-        cb.call(this, this[i], i, this)
-      }
-    }
-  }
   function hasOwnProperty(obj, attr) {
     return Object.prototype.hasOwnProperty.call(obj, attr)
   }
   var toString = Object.prototype.toString;
+  
   /** hack axios*/
   var axios_ = (function() {
     var require_cache = {}
@@ -116,94 +62,9 @@
       })
     }
     return axios_;
-  })()
+  })();
 
-  var qs = window['$qs'] = window['qs'] || (function() {
-    function encode(src) {
-      if (!src || typeof src !== 'string') {
-        return ''
-      }
-      return encodeURIComponent(src).replace(/\+/g, '%2B')
-    }
-
-    function get_type(src) {
-      if (!src) {
-        throw new Error('unknown type')
-      }
-      return src.replace(/\[object (.+?)\]/, '$1').toLowerCase()
-    }
-
-    function to_string(source) {
-      if (source === null || source === undefined) {
-        return ''
-      }
-      var srcType = toString.call(source)
-      var type = get_type(srcType)
-      switch (type) {
-        case 'number':
-        case 'boolean':
-          return encode(source.toString())
-        case 'string':
-          return encode(source)
-        case 'object':
-          return JSON.stringify(source)
-        default:
-          return encode(srcType)
-      }
-    }
-    function create_querystring(source) {
-      var result = []
-      for (var key in source) {
-        if (!hasOwnProperty(source, key) || source[key] === null || source[key] === undefined) continue
-        var value = source[key]
-        if (value instanceof Array) {
-          for (var i = 0; i < value.length; i++) {
-            if (value[i] === null || value[i] === undefined) continue
-            result.push(key + '[]=' + to_string(value[i]))
-          }
-        } else {
-          result.push(key + '=' + to_string(value))
-        }
-      }
-      return result.join('&')
-    }
-    function component2kv(src, params) {
-      var idx = src.indexOf('=')
-      if (idx === -1) return false
-      var key = src.substr(0, idx)
-      if (!key) return false
-      var value = src.substr(idx)
-      if (value.length === 1) {
-        params[key] = ''
-        return true
-      }
-      value = value.substr(1)
-      try {
-        params[key] = decodeURIComponent(value)
-      } catch (ex) {
-        params[key] = value
-      }
-      return true
-    }
-    function query2object(query) {
-      var params = {}
-      var idx = query.indexOf('&'); var kv
-      while (idx >= 0) {
-        kv = component2kv(query.substr(0, idx), params)
-        if (!kv) continue
-
-        query = query.substr(idx + 1)
-        idx = query.indexOf('&')
-      }
-      if (idx === -1) component2kv(query, params)
-      return params
-    }
-    return {
-      parse: query2object,
-      stringify: create_querystring
-    }
-  })()
-
+  
   function keys2params(keys, match) {
     var len = keys.length
     var params = {}; var value = ''
