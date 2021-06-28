@@ -10,8 +10,7 @@
         onReady: false
       }
     </script>
-  <script type="text/javascript" src="vendor/json3.min.js"></script>
-  <script type="text/javascript" src="vendor/promise.min.js"></script>
+  <script type="text/javascript" src="core/pollfill-dependence.js"></script>
   <script type="text/javascript" src="vendor/less/less.min.js"></script>
   <script type="text/javascript" src="vendor/axios.min.js"></script>
   <script type="text/javascript" src="vendor/vue.min.js"></script>
@@ -24,21 +23,26 @@
 <body>
 <div id="app"></div>
 <script>
-  VueView.boot({
-    el: document.getElementById('app'),
-    root: '/apps/home',
-    routes: function (resolve) {
-      var Route = VueView.RouterManager
-      Route('/').name('index').view('index').label('首页')
-      Route('/user').view('user/wrapper', true).group(function () {
-        Route('index').view('user/index')
-        Route('info').view('user/info')
-      });
-      Route('*').name('notfound').view('404').label('页面不存在')
+  PollfillDependence()
+  .when(!window.JSON, 'vendor/json3.min.js')
+  .when(!window.Promise, 'vendor/promise.min.js')
+  .then(function(){
+    VueView.boot({
+      el: document.getElementById('app'),
+      root: '/apps/home',
+      routes: function (resolve) {
+        var Route = VueView.RouterManager
+        Route('/').name('index').view('index').label('首页')
+        Route('/user').view('user/wrapper', true).group(function () {
+          Route('index').view('user/index')
+          Route('info').view('user/info')
+        });
+        Route('*').name('notfound').view('404').label('页面不存在')
 
-      resolve(Route.create())
-    }
-  });
+        resolve(Route.create())
+      }
+    });
+  })
 </script>
 </body>
 </html>

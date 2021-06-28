@@ -10,7 +10,7 @@
 	    var dependenced = 0;
 	    var then_;
 
-		function loadScript(url, callback) {
+		function loadScript(url, charset, callback) {
 			var script = document.createElement("script"),
 				head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
 
@@ -22,16 +22,14 @@
 				script = null
 			}
 			script.async = true;
-			if (s.scriptCharset) {
-				script.charset = s.scriptCharset
+			if (charset) {
+				script.charset = charset
 			}
 			script.src = url;
 			script.onload = script.onreadystatechange = function() {
 				if (!script.readyState || /loaded|complete/.test(script.readyState)) {
 					dispose();
-					if (callback) {
-						callback(200)
-					}
+					callback && callback(200)
 				}
 			};
 			head.insertBefore(script, head.firstChild)
@@ -49,14 +47,15 @@
 	        });
 	    }
 	    function when(condition, url){
-	        if(condition){
+	        if(!condition){
 	            dependenced++;
 	            dependences.push({url: url, dependenced: true});
-	            return __construcor;
+	            return instance_;
 	        }
 	        var dependence = {url: url, dependenced: false};
 	        dependences.push(dependence);
 	        require(dependence);
+            return instance_;
 	    }
 
 	    function then(cb){
@@ -65,12 +64,13 @@
 	            return;
 	        }
 	        then_ = cb;
-	    }
-
-	    return {
+        }
+        var instance_ = {
 		    when: when,
 		    then: then
-	    }
+	    };
+
+	    return instance_
     }
     __construcor.create = function(){
         return __construcor();
