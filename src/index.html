@@ -16,10 +16,10 @@
 <div id="app"></div>
 <script>
   function loadVuePage(next){
-    next.require('core/vue-page.js').then(loadVuePageUtils)
+    next.require('core/vue-page.js', 'core/vue-page-utils.js').then(loadVuePageUtils)
   }
   function loadVuePageUtils(next){
-    next.require('core/vue-page-utils.js', 'core/vue-page-route-creator.js').then(BootVuePage)
+    next.require('core/vue-page-route-creator.js').then(BootVuePage)
   }
   function BootVuePage(){
       VueView.boot({
