@@ -36,11 +36,11 @@
 		}
 	    function checkThen(){
 	        if(dependenced == dependences.length){
-	            then_ && then_();
+	            then_ && then_(__construcor());
 	        }
 	    }
-	    function require(dependence){
-	        loadScript(dependence.url, function(){
+	    function require_(dependence){
+	        loadScript(dependence.url, 'utf-8', function(){
 	            dependence.dependenced = true;
 	            dependenced++;
 	            checkThen();
@@ -54,20 +54,34 @@
 	        }
 	        var dependence = {url: url, dependenced: false};
 	        dependences.push(dependence);
-	        require(dependence);
+	        require_(dependence);
+            return instance_;
+	    }
+	    function require(url){
+            if(!(url instanceof Array)){
+                url = Array.prototype.slice.call(arguments, 0);
+            }
+            if(url.length == 0) return;
+            
+            for(var i = 0; i < url.length;i++){
+                var dependence = {url: url[i], dependenced: false};
+                dependences.push(dependence);
+                require_(dependence);
+            }
             return instance_;
 	    }
 
 	    function then(cb){
 	        if(dependenced == dependences.length){
-	            cb();
+	            cb(__construcor());
 	            return;
 	        }
 	        then_ = cb;
         }
         var instance_ = {
 		    when: when,
-		    then: then
+		    then: then,
+		    require: require
 	    };
 
 	    return instance_
