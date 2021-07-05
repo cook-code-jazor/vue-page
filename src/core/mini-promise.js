@@ -4,46 +4,53 @@
         return
     }
     global.MiniPromise = factory()
-}(this || window, function(){
-
+}(this || window, function(){   
+    'use strict';
 
     var STATUS_PENDING = 0, STATUS_RESOLVED = 1, STATUS_REJECTED = 2;
+    var idGen = 0;
     function __miniPromise(delegate_){
+        this.id = idGen++;
         this.status = STATUS_PENDING;
         this.userToken = null;
         this.exception = null;
         this._then = null;
         this._catch = null;
+        this._finally = null;
         this._next = null;
 
         if(!delegate_) return;
-        _this = this;
-        delegate_(function resolve(result){
+        var _this = this;
+        delegate_(function (result){
             _this.resolve(result);
-        }, function reject(throwable){
+        }, function (throwable){
             _this.reject(throwable);
         });
     }
-    __miniPromise.prototype.reject = function(throwable){
-        this.exception = throwable
-        this.status = STATUS_REJECTED
-        if(this._next && this._next._catch){
-            this._next._catch(this.exception);
+    __miniPromise.prototype.__checkCatch = function(throwable){
+        if(this._next){
+            this._next.__checkCatch(throwable);
             return;
         }
         if(this._catch){
-            this._catch(this.exception);
+            this._catch(throwable)
             return;
         }
         throw throwable
     }
+    __miniPromise.prototype.reject = function(throwable){
+        this.exception = throwable
+        this.status = STATUS_REJECTED
+        setTimeout(() => this.__checkCatch(throwable) , 0);
+    }
     __miniPromise.prototype.resolve = function(userToken){
         this.userToken = userToken
         this.status = STATUS_RESOLVED
-        if(this._then){
-            var returned = this._then(userToken)
-            var that = this;
+        if(!this._then) return;
+       try{
+            var returned = this._then(userToken);
             if(returned instanceof __miniPromise){
+                var that = this;
                 returned.then(function (res) {
                     that._next.resolve(res);
                 }).catch(function(throwable) {
@@ -52,42 +59,89 @@
                 return;
             }
             this._next.resolve(returned);
-        }
+       }catch(ex){
+            this._next.reject(ex);
+       }
     }
     __miniPromise.prototype.then = function(cb) {
         if(this.status === STATUS_RESOLVED){
-            var returned = cb(_this.userToken)
-            if(returned instanceof __miniPromise){
-                return this._next = returned;
+            try{
+                var returned = cb(this.userToken)
+                if(returned instanceof __miniPromise){
+                    return this._next = returned;
+                }
+                return this._next = __miniPromise.resolve(returned);
+            }catch(ex){
+                return this._next = __miniPromise.reject(ex);
             }
-            return this._next = __miniPromise.resolve(returned);
         }
         
         if(this.status === STATUS_REJECTED){
-            return this._next = __miniPromise.reject(this.exception);
+            return this._next = new __miniPromise();
         }
         this._then = cb;
+
         return this._next = new __miniPromise();
     };
     __miniPromise.prototype.catch = function(cb){
         this._catch = cb;
     }
+    __miniPromise.prototype.finally = function(cb){
+        this._finally = cb;
+    }
 
     __miniPromise.resolve = function(userToken){
-        var promise = new __miniPromise();
-        setTimeout(() => {
-            promise.resolve(userToken)
-        }, 0);
-        return promise;
+        return new __miniPromise(function(resolve, reject){
+            setTimeout(() => {
+                resolve(userToken)
+            }, 0);
+        });
     }
 
-    __miniPromise.reject = function(userToken){
-
-        var promise = new __miniPromise();
-        setTimeout(() => {
-            promise.reject(userToken)
-        }, 0);
-        return promise;
+    __miniPromise.reject = function(throwable){
+        return new __miniPromise(function(resolve, reject){
+            setTimeout(() => {
+                reject(throwable)
+            }, 0);
+        });
     }
+    __miniPromise.all = function(promise){
+        var promises = [];
+        if(promise instanceof Array){
+            promises = promise;
+        }else{
+            promises = Array.prototype.slice.call(arguments, 0);
+        }
+
+        return new __miniPromise(function(resolve, reject){
+
+            var succeed = [];
+            var failed = [];
+            var finished = 0;
+
+            function setResult(){
+                finished++;
+                if(finished === promises.length ){
+                    if(failed.length > 0) reject(failed)
+                    else resolve(succeed)
+                }
+            }
+
+
+            for(let i = 0; i < promises.length; i++){
+                (function(p, idx){
+                    p.then(function(res) {
+                        succeed[idx] = res;
+                        setResult();
+                    }).catch(function(throwable){
+                        failed[idx] = throwable;
+                        setResult();
+                    })
+                })(promises[i], i);
+            }
+
+        });
+
+    };
     return __miniPromise;
 }));
