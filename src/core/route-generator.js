@@ -3,10 +3,7 @@
   * @license MIT
   */
 (function(global, factory) {
-  if (!window.VueView) {
-    throw new Error('\'VueView\' not import')
-  }
-  VueView.RouterManager = factory()
+  global.RouteGenerator = factory()
 }(this || window, function() {
   var root = new RouteGroup()
   var stacks = [root]

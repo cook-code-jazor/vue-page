@@ -45,30 +45,31 @@
     __miniPromise.prototype.reject = function(throwable){
         this.exception = throwable
         this.status = STATUS_REJECTED
-        setTimeout(() => this.__checkCatch(throwable) , 0);
+        var this_ = this;
+        setTimeout(function() {this_.__checkCatch(throwable) ;}, 0);
     }
     __miniPromise.prototype.resolve = function(userToken){
         this.userToken = userToken
         this.status = STATUS_RESOLVED
-        setTimeout(() => {
-            if(!this._then) {
-                this._finally && this._finally();
+        var this_ = this;
+        setTimeout(function(){
+            if(!this_._then) {
+                this_._finally && this_._finally();
                 return;
             }
             try{
-                    var returned = this._then(userToken);
+                    var returned = this_._then(userToken);
                     if(returned instanceof __miniPromise){
-                        var that = this;
                         returned.then(function (res) {
-                            that._next.resolve(res);
+                            this_._next.resolve(res);
                         }).catch(function(throwable) {
-                            that._next.reject(throwable);
+                            this_._next.reject(throwable);
                         })
                         return;
                     }
-                    this._next.resolve(returned);
+                    this_._next.resolve(returned);
             }catch(ex){
-                    this._next.reject(ex);
+                this_._next.reject(ex);
             }
         }, 0);
     }
@@ -94,6 +95,7 @@
     };
     __miniPromise.prototype.catch = function(cb){
         this._catch = cb;
+        return this;
     }
     __miniPromise.prototype.finally = function(cb){
         this._finally = cb;
@@ -133,7 +135,7 @@
             }
 
 
-            for(let i = 0; i < promises.length; i++){
+            for(var i = 0; i < promises.length; i++){
                 (function(p, idx){
                     p.then(function(res) {
                         succeed[idx] = res;

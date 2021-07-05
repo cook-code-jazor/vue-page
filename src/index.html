@@ -10,23 +10,19 @@
         onReady: false
       }
     </script>
-  <script type="text/javascript" src="core/pollfill-dependence.js"></script>
+  <script type="text/javascript" src="core/mini-promise.js"></script>
+  <script type="text/javascript" src="core/dependence.js"></script>
 </head>
 <body>
 <div id="app"></div>
 <script>
-  function loadVuePage(next){
-    next.require('core/vue-page.js', 'core/vue-page-utils.js').then(loadVuePageUtils)
-  }
-  function loadVuePageUtils(next){
-    next.require('core/vue-page-route-creator.js').then(BootVuePage)
-  }
+  
   function BootVuePage(){
       VueView.boot({
         el: document.getElementById('app'),
         root: '/apps/home',
         routes: function (resolve) {
-          var Route = VueView.RouterManager
+          var Route = RouteGenerator
           Route('/').name('index').view('index').label('首页')
           Route('/user').view('user/wrapper', true).group(function () {
             Route('index').view('user/index')
@@ -38,11 +34,14 @@
         }
       });
   }
-  PollfillDependence()
-    .when(!window.JSON, 'vendor/json3.min.js')
-    .when(!window.Promise, 'vendor/promise.min.js')
-    .require('vendor/less/less.min.js', 'vendor/axios.min.js', 'vendor/vue.min.js')
-    .then(loadVuePage)
+
+  Dependence()
+  .when(!window.JSON, 'vendor/json3.min.js')
+  .when(!window.Promise, 'vendor/promise.min.js')
+  .require('vendor/less/less.min.js', 'vendor/axios.min.js', 'vendor/vue.min.js')
+  .then(function(next){
+    return next.require('core/vue-page.js', 'core/vue-page-utils.js', 'core/route-generator.js');
+  }).then(BootVuePage)
 </script>
 </body>
 </html>
