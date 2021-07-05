@@ -43,15 +43,17 @@
         }
     }
     __miniPromise.prototype.reject = function(throwable){
+        if(this.status !== STATUS_PENDING) throw new Error('invalid operation, Promise Status is \'' + this.status + '\'');
         this.exception = throwable
         this.status = STATUS_REJECTED
         var this_ = this;
         setTimeout(function() {this_.__checkCatch(throwable) ;}, 0);
     }
     __miniPromise.prototype.resolve = function(userToken){
+        if(this.status !== STATUS_PENDING) throw new Error('invalid operation, Promise Status is \'' + this.status + '\'');
+        var this_ = this;
         this.userToken = userToken
         this.status = STATUS_RESOLVED
-        var this_ = this;
         setTimeout(function(){
             if(!this_._then) {
                 this_._finally && this_._finally();

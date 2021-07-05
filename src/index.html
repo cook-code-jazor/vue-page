@@ -34,7 +34,9 @@
         }
       });
   }
-
+MiniPromise.resolve('hello world!').then(res=>{
+  console.log(res)
+})
   Dependence()
   .when(!window.JSON, 'vendor/json3.min.js')
   .when(!window.Promise, 'vendor/promise.min.js')
