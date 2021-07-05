@@ -60,16 +60,16 @@
                 return;
             }
             try{
-                    var returned = this_._then(userToken);
-                    if(returned instanceof __miniPromise){
-                        returned.then(function (res) {
-                            this_._next.resolve(res);
-                        }).catch(function(throwable) {
-                            this_._next.reject(throwable);
-                        })
-                        return;
-                    }
-                    this_._next.resolve(returned);
+                var returned = this_._then(userToken);
+                if(returned instanceof __miniPromise){
+                    returned.then(function (res) {
+                        this_._next.resolve(res);
+                    }).catch(function(throwable) {
+                        this_._next.reject(throwable);
+                    })
+                    return;
+                }
+                this_._next.resolve(returned);
             }catch(ex){
                 this_._next.reject(ex);
             }
