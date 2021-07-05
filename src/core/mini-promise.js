@@ -32,11 +32,15 @@
             this._next.__checkCatch(throwable);
             return;
         }
-        if(this._catch){
-            this._catch(throwable)
-            return;
+        try{
+            if(this._catch){
+                this._catch(throwable)
+                return;
+            }
+            throw throwable
+        }finally{
+            this._finally && this._finally();
         }
-        throw throwable
     }
     __miniPromise.prototype.reject = function(throwable){
         this.exception = throwable
@@ -46,22 +50,27 @@
     __miniPromise.prototype.resolve = function(userToken){
         this.userToken = userToken
         this.status = STATUS_RESOLVED
-        if(!this._then) return;
-       try{
-            var returned = this._then(userToken);
-            if(returned instanceof __miniPromise){
-                var that = this;
-                returned.then(function (res) {
-                    that._next.resolve(res);
-                }).catch(function(throwable) {
-                    that._next.reject(throwable);
-                })
+        setTimeout(() => {
+            if(!this._then) {
+                this._finally && this._finally();
                 return;
             }
-            this._next.resolve(returned);
-       }catch(ex){
-            this._next.reject(ex);
-       }
+            try{
+                    var returned = this._then(userToken);
+                    if(returned instanceof __miniPromise){
+                        var that = this;
+                        returned.then(function (res) {
+                            that._next.resolve(res);
+                        }).catch(function(throwable) {
+                            that._next.reject(throwable);
+                        })
+                        return;
+                    }
+                    this._next.resolve(returned);
+            }catch(ex){
+                    this._next.reject(ex);
+            }
+        }, 0);
     }
     __miniPromise.prototype.then = function(cb) {
         if(this.status === STATUS_RESOLVED){
@@ -92,17 +101,13 @@
 
     __miniPromise.resolve = function(userToken){
         return new __miniPromise(function(resolve, reject){
-            setTimeout(() => {
-                resolve(userToken)
-            }, 0);
+            resolve(userToken)
         });
     }
 
     __miniPromise.reject = function(throwable){
         return new __miniPromise(function(resolve, reject){
-            setTimeout(() => {
-                reject(throwable)
-            }, 0);
+            reject(throwable)
         });
     }
     __miniPromise.all = function(promise){
