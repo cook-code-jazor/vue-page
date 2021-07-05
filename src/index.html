@@ -39,9 +39,8 @@
   .when(!window.JSON, 'vendor/json3.min.js')
   .when(!window.Promise, 'vendor/promise.min.js')
   .require('vendor/less/less.min.js', 'vendor/axios.min.js', 'vendor/vue.min.js')
-  .then(function(next){
-    return next.require('core/vue-page.js', 'core/vue-page-utils.js', 'core/route-generator.js');
-  }).then(BootVuePage)
+  .require('core/vue-page.js', 'core/vue-page-utils.js', 'core/route-generator.js')
+  .then(BootVuePage)
 </script>
 </body>
 </html>

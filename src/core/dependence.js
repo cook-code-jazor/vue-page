@@ -40,26 +40,46 @@
             if(!(url instanceof Array)){
                 url = Array.prototype.slice.call(arguments, 0);
             }
-			Array.prototype.push.apply(requires, url);
+			var requires_ = [];
+			if(requires.length > 0){
+				Array.prototype.push.apply(requires_, requires);
+				requires.length = 0;
+			}
+			Array.prototype.push.apply(requires_, url);
 
-            if(url.length == 0) return MiniPromise.resolve();
+			var condition = null;
+			if(requires_.length > 0 && typeof requires_[requires_.length - 1] === 'function'){
+				condition = requires_.pop();
+			}
 
-            var promises = [];
-            for(var i = 0; i < requires.length;i++){
-				(function(u){
-					promises.push(new MiniPromise(function(resolve, reject){
-						loadScript(u, 'utf-8', function(){
-							resolve();
-						});
-					}));
-				})(requires[i]);
-            }
-            return MiniPromise.all(promises).then(function(){ return __construcor()});
+			lastPromise_ = lastPromise_.then(function(){
+				if(condition) requires_ = condition();
+
+				if(requires_.length == 0) return MiniPromise.resolve();
+				
+				var promises = [];
+				for(var i = 0; i < requires_.length;i++){
+					(function(u){
+						promises.push(new MiniPromise(function(resolve, reject){
+							loadScript(u, 'utf-8', function(){
+								resolve();
+							});
+						}));
+					})(requires_[i]);
+				}
+				return MiniPromise.all(promises);
+			});
+            return instance_
 	    }
+		function then(cb){
+			lastPromise_.then(cb);
+		}
+		var lastPromise_ = MiniPromise.resolve();
 		
         var instance_ = {
 		    require: require,
-			when: when
+			when: when,
+			then: then
 	    };
 
 	    return instance_
