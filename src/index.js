@@ -2,6 +2,12 @@
   * vue-page v2.0.0
   * @license MIT
   */
+
+import qs from './libs/qs'
+import axios from './libs/axios'
+import {toString, hasOwnProperty, getType, keys2params, parsePath, wrapper_call, parse_url, trim, merge, compile_path} from './libs/utils'
+import parse_component from './libs/compiler'
+
 (function(global, factory) {
   if (!window.Vue) {
     throw new Error('\'Vue\' not import')
@@ -12,94 +18,7 @@
   window.VueView = factory()
 }(this || window, function() {
   'use strict'
-  var toString = Object.prototype.toString;
-  var path2regexp = (function() { var c = '/'; var d = './'; var j = new RegExp(['(\\\\.)', '(?:\\:(\\w+)(?:\\(((?:\\\\.|[^\\\\()])+)\\))?|\\(((?:\\\\.|[^\\\\()])+)\\))([+*?])?'].join('|'), 'g'); function i(M, E) { var N = []; var x = 0; var v = 0; var G = ''; var q = (E && E.delimiter) || c; var s = (E && E.delimiters) || d; var H = false; var L; while ((L = j.exec(M)) !== null) { var y = L[0]; var t = L[1]; var C = L.index; G += M.slice(v, C); v = C + y.length; if (t) { G += t[1]; H = true; continue } var J = ''; var B = M[v]; var A = L[2]; var p = L[3]; var u = L[4]; var z = L[5]; if (!H && G.length) { var w = G.length - 1; if (s.indexOf(G[w]) > -1) { J = G[w]; G = G.slice(0, w) } } if (G) { N.push(G); G = ''; H = false } var F = J !== '' && B !== undefined && B !== J; var K = z === '+' || z === '*'; var D = z === '?' || z === '*'; var r = J || q; var I = p || u; N.push({ name: A || x++, prefix: J, delimiter: r, optional: D, repeat: K, partial: F, pattern: I ? e(I) : '[^' + f(r) + ']+?' }) } if (G || v < M.length) { N.push(G + M.substr(v)) } return N } function b(q, p) { return n(i(q, p)) } function n(r) { var q = new Array(r.length); for (var p = 0; p < r.length; p++) { if (typeof r[p] === 'object') { q[p] = new RegExp('^(?:' + r[p].pattern + ')$') } } return function(s, w) { var x = ''; var t = (w && w.encode) || encodeURIComponent; for (var u = 0; u < r.length; u++) { var z = r[u]; if (typeof z === 'string') { x += z; continue } var A = s ? s[z.name] : undefined; var y; if (Array.isArray(A)) { if (!z.repeat) { throw new TypeError('Expected "' + z.name + '" to not repeat, but got array') } if (A.length === 0) { if (z.optional) { continue } throw new TypeError('Expected "' + z.name + '" to not be empty') } for (var v = 0; v < A.length; v++) { y = t(A[v], z); if (!q[u].test(y)) { throw new TypeError('Expected all "' + z.name + '" to match "' + z.pattern + '"') }x += (v === 0 ? z.prefix : z.delimiter) + y } continue } if (typeof A === 'string' || typeof A === 'number' || typeof A === 'boolean') { y = t(String(A), z); if (!q[u].test(y)) { throw new TypeError('Expected "' + z.name + '" to match "' + z.pattern + '", but got "' + y + '"') }x += z.prefix + y; continue } if (z.optional) { if (z.partial) { x += z.prefix } continue } throw new TypeError('Expected "' + z.name + '" to be ' + (z.repeat ? 'an array' : 'a string')) } return x } } function f(p) { return p.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1') } function e(p) { return p.replace(/([=!:$/()])/g, '\\$1') } function h(p) { return p && p.sensitive ? '' : 'i' } function l(s, r) { if (!r) { return s } var p = s.source.match(/\((?!\?)/g); if (p) { for (var q = 0; q < p.length; q++) { r.push({ name: q, prefix: null, delimiter: null, optional: false, repeat: false, partial: false, pattern: null }) } } return s } function a(t, q, r) { var s = []; for (var p = 0; p < t.length; p++) { s.push(k(t[p], q, r).source) } return new RegExp('(?:' + s.join('|') + ')', h(r)) } function m(r, p, q) { return o(i(r, q), p, q) } function o(C, w, x) { x = x || {}; var A = x.strict; var s = x.end !== false; var q = f(x.delimiter || c); var r = x.delimiters || d; var t = [].concat(x.endsWith || []).map(f).concat('$').join('|'); var z = ''; var v = false; for (var u = 0; u < C.length; u++) { var B = C[u]; if (typeof B === 'string') { z += f(B); v = u === C.length - 1 && r.indexOf(B[B.length - 1]) > -1 } else { var y = f(B.prefix); var p = B.repeat ? '(?:' + B.pattern + ')(?:' + y + '(?:' + B.pattern + '))*' : B.pattern; if (w) { w.push(B) } if (B.optional) { if (B.partial) { z += y + '(' + p + ')?' } else { z += '(?:' + y + '(' + p + '))?' } } else { z += y + '(' + p + ')' } } } if (s) { if (!A) { z += '(?:' + q + ')?' }z += t === '$' ? '$' : '(?=' + t + ')' } else { if (!A) { z += '(?:' + q + '(?=' + t + '))?' } if (!v) { z += '(?=' + q + '|' + t + ')' } } return new RegExp('^' + z, h(x)) } function k(r, p, q) { if (r instanceof RegExp) { return l(r, p) } if (Array.isArray(r)) { return a((r), p, q) } return m((r), p, q) } var g = k; g.parse = i; g.compile = b; g.tokensToFunction = n; g.tokensToRegExp = o; return g })();
   
-  var qs=window["$qs"]=window.qs||(function(){function c(g){if(!g||typeof g!=="string"){return""}return encodeURIComponent(g).replace(/\+/g,"%2B")}function d(g){if(!g){throw new Error("unknown type")}return g.replace(/\[object (.+?)\]/,"$1").toLowerCase()}function f(h,n,k){if(n===null||n===undefined){return""}var l=toString.call(n);var m=d(l);switch(m){case"number":case"boolean":k.push(h+"="+c(n.toString()));return;case"array":for(var g=0;g<n.length;g++){f(h+"["+g+"]",n[g],k)}return;case"object":for(var j in n){if(!n.hasOwnProperty(j)){continue}f(h+"["+j+"]",n[j],k)}return;case"string":k.push(h+"="+c(n))}}function b(i){var h=[];for(var g in i){if(!hasOwnProperty(i,g)){continue}f(g,i[g],h)}return h.join("&")}function a(k,j){var h=k.indexOf("=");if(h===-1){return false}var i=k.substr(0,h);if(!i){return false}var l=k.substr(h);if(l.length===1){j[i]="";return true}l=l.substr(1);try{j[i]=decodeURIComponent(l)}catch(g){j[i]=l}return true}function e(j){var i={};var g=j.indexOf("&");var h;while(g>=0){h=a(j.substr(0,g),i);if(!h){continue}j=j.substr(g+1);g=j.indexOf("&")}if(g===-1){a(j,i)}return i}return{parse:e,stringify:b}})();
-  
-  (function(){if(!Function.prototype.bind){Function.prototype.bind=function(c){var d=this;return function(){return d.apply(c||null,arguments)}}}if(!String.prototype.startsWith){String.prototype.startsWith=function b(d,c){if(!d){return false}c=c||0;return this.slice(c,c+d.length)===d};String.prototype.endsWith=function a(d,c){if(!d){return false}if(c===undefined){return this.slice(this.length-d.length)===d}return this.slice(c-d.length,c)===d}}if(!Object.keys){Object.keys=function(f){if(!f){return[]}var e=[];if(f instanceof Array){for(var c=0;c<f.length;c++){e.push(c)}}else{if(typeof f==="object"){for(var d in f){if(!hasOwnProperty(f,d)){continue}e.push(d)}}}return e}}if(!Object.merge){Object.merge=function(c,e){if(!e){return c}for(var d in e){if(!hasOwnProperty(e,d)){continue}c[d]=e[d]}return c}}if(!Array.prototype.forEach){Array.prototype.forEach=function(c){if(!c){return}for(var d=0;d<this.length;d++){c.call(this,this[d],d,this)}}}})();
-
-  function hasOwnProperty(obj, attr) {
-    return Object.prototype.hasOwnProperty.call(obj, attr)
-  }
-  function getType(instance){
-    return toString.apply(instance).replace(/\[object (.+?)\]/,"$1").toLowerCase()
-  }
-  
-  /** hack axios*/
-  var axios_ = (function() {
-    var require_cache = {}
-
-    function parseResponse(script) {
-      var module = { exports: {}};
-      (new Function('module', 'exports', script))(module, module.exports)
-      return module.exports
-    }
-    var axios_ = axios.create({
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    axios_.interceptors.request.use(function(config) {
-      if (config.cache !== true) {
-        config.headers['Expires'] = 0
-        config.headers['Cache-Control'] = 'no-cache'
-        config.headers['Pragma'] = 'no-cache'
-      }
-      return config
-    }, function(error) {
-      return Promise.reject(error)
-    })
-    axios_.require = function(url, options) {
-      options = options || {}
-      var cache_tag = url
-      var singlon_cache_tag = cache_tag + '--singlon'
-      if (hasOwnProperty(require_cache, cache_tag)) {
-        if (hasOwnProperty(options, 'singlon')) {
-          return Promise.resolve(require_cache[singlon_cache_tag])
-        }
-        return Promise.resolve(parseResponse(require_cache[cache_tag]))
-      }
-      return axios_.get(url).then(function(response) {
-        require_cache[cache_tag] = response.data
-        require_cache[singlon_cache_tag] = parseResponse(response.data)
-        return require_cache[singlon_cache_tag]
-      })
-    }
-    return axios_;
-  })();
-
-  
-  function keys2params(keys, match) {
-    var len = keys.length
-    var params = {}; var value = ''
-    for (var j = 0; j < len; j++) {
-      value = match[j + 1]
-      params[keys[j].name] = value
-    }
-    return params
-  }
-
-  function path_split(path, keys) {
-    var result = {
-      parts: [],
-      keys: {}
-    }
-    var parts = path.split('/')
-    if (parts.length === 0) return result
-
-    var keyIndex = 0
-    for (var i = 0; i < parts.length; i++) {
-      var part = parts[i]
-
-      if (!part || part.substr(0, 1) !== ':') {
-        result.parts.push(part)
-        continue
-      }
-      result.parts.push(null)
-      result.keys[keys[keyIndex].name] = result.parts.length - 1
-      keyIndex++
-    }
-    return result
-  }
   function get_route_path(route, params) {
     var parts = route.parts
     var parts_ = parts.parts
@@ -111,235 +30,6 @@
     }
     return parts_.join('/')
   }
-  function wrapper_call(args, body) {
-    var argNames = []
-    var argValues = []
-
-    for (var name in args) {
-      if (!hasOwnProperty(args, name)) continue
-      argNames.push(name)
-      argValues.push(args[name])
-    }
-
-    return (new Function(argNames, body)).apply(null, argValues)
-  }
-  function get_hash_url() {
-    var hash = window.location.hash
-    if (hash && hash.length > 1) return hash.substr(1)
-    return ''
-  }
-  function parse_url(mode, suffix) {
-    var url
-    if (mode === 'hash') {
-      url = get_hash_url()
-    } else {
-      url = window.location.pathname || ''
-    }
-    if (!url) url = '/'
-    var idx = url.indexOf('?')
-    var querystring = ''
-    var path = url
-    if (idx >= 0) {
-      querystring = url.substr(idx + 1)
-      path = url.substr(0, idx)
-    } else {
-      querystring = window.location.search
-      querystring = querystring || ''
-      if (querystring) {
-        querystring = querystring.substr(1)
-      }
-    }
-    if (suffix && path.endsWith(suffix)) {
-      path = path.substr(0, path.length - suffix.length)
-    }
-    return {
-      path: path,
-      query: qs.parse(querystring),
-      url: url
-    }
-  }
-  function parse_attrs(src) {
-    var regexp = /<(template|script|style)\b(.*?)(\/)?>/ig; var attrRegexp = /(\w+)="(.+?)"/ig
-    var match = regexp.exec(src)
-    if (!match) return {}
-    var attrs = {}
-    var attrString = match[2]
-
-    while ((match = attrRegexp.exec(attrString)) !== null) {
-      attrs[match[1]] = match[2]
-    }
-    return attrs
-  }
-  function parse_template(src) {
-    var regexp = /<(template|script|style)\b(?:.*?)(\/)?>|<\/(template|script|style)>/ig
-    var match
-    var stacks = []
-    var level = 0
-    while ((match = regexp.exec(src)) !== null) {
-      var name = match[1]; var isEnd = false; var isSelfClose = false
-      if (name === undefined) {
-        name = match[3]
-        isEnd = true
-      } else if (match[2]) {
-        isSelfClose = true
-      }
-      if (isEnd) {
-        level--
-        if (level < 0) throw new Error('template error: tag[' + name + '] not match')
-        var last = stacks[stacks.length - 1]
-        if (last.name !== name) throw new Error('template error: tag[' + name + '] not match')
-        if (level > 0) stacks.pop()
-        else {
-          last['contentEnd'] = match.index
-        }
-      } else {
-        var attrs = parse_attrs(match[0])
-        if (isSelfClose) {
-          stacks.push({ name: name, attrs: attrs, level: level + 1, start: match.index, close: true })
-        } else {
-          level++
-          stacks.push({ name: name, attrs: attrs, level: level, start: match.index, close: false, contentStart: match.index + match[0].length })
-        }
-      }
-    }
-    var result = {}
-    for (var i = 0; i < stacks.length; i++) {
-      var stack = stacks[i]
-      var tagName = stack.name
-      if (stack.level !== 1 || (!stack.close && !hasOwnProperty(stack, 'contentEnd'))) throw new Error('template error: tag[' + tagName + '] not match')
-      if (stack.close) continue
-      if (!hasOwnProperty(result, tagName)) result[tagName] = { content: '', attrs: stack.attrs }
-      var contentLength = stack.contentEnd - stack.contentStart
-      if (contentLength === 0) continue
-      if (tagName === 'script') {
-        result[tagName].content += src.substr(stack.contentStart, contentLength) + '\r\n'
-      } else {
-        result[tagName].content = src.substr(stack.contentStart, contentLength)
-      }
-    }
-    return result
-  }
-  function trim(src) {
-    if (!src) return src
-    return src.replace(/^\s+/, '').replace(/\s+$/, '')
-  }
-  function merge(a, b) {
-    var options = {}
-    var key
-    for (key in a) {
-      if (!hasOwnProperty(a, key)) continue
-      options[key] = a[key]
-    }
-    for (key in b) {
-      if (!hasOwnProperty(b, key)) continue
-      var value = b[key]
-      if (typeof value === 'undefined') continue
-      options[key] = value
-    }
-    return options
-  }
-  function appendStyles(styles) {
-    var head = document.head || document.getElementsByTagName('head')[0]
-    var ele = document.createElement('style')
-    var appended = false
-    ele.type = 'text/css'
-    if (!ele.styleSheet) {
-      ele.appendChild(document.createTextNode(styles))
-      appended = true
-    }
-    head.appendChild(ele)
-    if (ele.styleSheet && !appended) ele.styleSheet.cssText = styles
-  }
-  function parse_component(app, src, file) {
-    var parts = parse_template(src)
-    var scriptComponent = hasOwnProperty(parts, 'script') ? parts['script'] : null
-    var templateComponent = hasOwnProperty(parts, 'template') ? parts['template'] : null
-    var styleComponent = hasOwnProperty(parts, 'style') ? parts['style'] : null
-
-    var script = trim(scriptComponent ? scriptComponent.content : '')
-    var template = trim(templateComponent ? templateComponent.content : '')
-    var style = trim(styleComponent ? styleComponent.content : '')
-    if (!script && !template) {
-      return {
-        render: function(h) {
-          return h('')
-        }
-      }
-    }
-    if (style) {
-      if (styleComponent && styleComponent.attrs && hasOwnProperty(styleComponent.attrs, 'lang')) {
-        var type = styleComponent.attrs['lang']
-        if (type === 'less') {
-          if (window.less) {
-            less.render(style, {compress: true}, function (e, result) {
-              if (e) throw e
-              appendStyles(result.css)
-            })
-          }
-        }
-      } else {
-        appendStyles(style)
-      }
-    }
-
-    var options = null
-    var render = null
-    try {
-      if (template) {
-        render = Vue.compile(template)
-      }
-      if (!script) {
-        return {
-          render: render.render,
-          staticRenderFns: render.staticRenderFns
-        }
-      }
-    }catch (e) {
-      console.log(e, template,script)
-      throw e;
-    }
-    if (!script.startsWith('export default')) {
-      throw new Error('must export template options from ')
-    }
-    // 进行简单二次编译
-    script = script.replace(/^export default/, 'module.exports = ')
-    script = script.replace(/\bimport(?:\()(.+?)(?:\))/ig, 'Component($1)')
-    script = script.replace(/^(?:\s*)import(?:\s+)(\w+)(?:\s+)from(?:\s+)(.+?)/ig, 'var $1 = Component($2)')
-    var module = { exports: {}}
-    var idx = file.lastIndexOf('/'); var dir = ''
-    if (idx >= 0) {
-      dir = file.substr(0, idx + 1)
-    }
-    try {
-      wrapper_call({
-        'module': module,
-        'exports': module.exports,
-        'App': app,
-        'Component': function (file_) {
-          file_ = compile_path(dir, file_)
-          return app.component(file_, true)
-        }
-      }, script)
-    }catch (e) {
-      console.log(e, script)
-      throw e;
-    }
-
-    options = module.exports
-    if (render) {
-      options.render = render.render
-      options.staticRenderFns = render.staticRenderFns
-    }
-    return options
-  }
-  function compile_path(a, b) {
-    if (!a) return b
-    if (!b) return a
-    if (a.substr(a.length - 1) !== '/') a += '/'
-    if (b.substr(0, 1) === '/') return b
-    return a + b
-  }
-
   function Route(name, path, view, router) {
     var keys = []
     this.name = name
@@ -353,9 +43,10 @@
       this.keys = []
       this.parts = null
     } else {
-      this.regexp = (path instanceof RegExp) ? path : path2regexp(path, keys)
-      this.keys = keys
-      this.parts = path_split(path, keys)
+      var parsed = parsePath(path);
+      this.regexp = parsed.regexp;
+      this.keys = parsed.keys
+      this.parts = parsed.parts
     }
     this.view = view
     this.viewComponent = null
@@ -727,14 +418,14 @@
       return Promise.resolve(module.exports)
     }
     file = this.parse(file)
-    return axios_.require(file)
+    return axios.require(file)
   }
   Application.prototype.getFileContents = function(file) {
     if (this.views) {
       return Promise.resolve(this.views[file])
     }
     file = this.parse(file)
-    return axios_.get(file).then(function(response) { return response.data })
+    return axios.get(file).then(function(response) { return response.data })
   }
   Application.prototype.loadVue = function(file) {
     if (hasOwnProperty(this.options, 'viewPath')) {
