@@ -16,7 +16,14 @@ module.exports = {
         },
         extractComments: false,
     })],
-},
+  },
+  module: {
+      rules: [{
+          test: /\.js$/,
+          use: 'babel-loader',
+          exclude: /node_modules|public\/core|public\/vendor/
+      }]
+  },
   plugins: [
     new HtmlWebpackPlugin({
       publicPath: './public/',
@@ -28,7 +35,7 @@ module.exports = {
       title: 'VuePage',
     }),
     new CopyPlugin({patterns : [
-        { from: "./public/", to: "./" , transform: (content) => content },
+        { from: "./public/", to: "./" },
       ]}),
   ],
   output: {
