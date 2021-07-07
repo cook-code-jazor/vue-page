@@ -13,7 +13,7 @@
 <body>
   <div id="app"></div>
   <script>
-    function createRoutes() {
+    function routes() {
       let Route = VASPA.RG()
       Route('/').name('index').view('index').label('首页')
       Route('/user').view('user/wrapper', true).group(function () {
@@ -31,15 +31,13 @@
         el: document.getElementById('app'),
         root: '/apps/home',
         bootstrap: 'bootstrap',
-        components: ['name'],
-        routes: createRoutes()
+        routes: routes()
       });
     }
     const random = +new Date()
     Dependence()
       .when(!window.JSON, '/vendor/json3.min.js')
       .when(!window.Promise, '/vendor/promise.min.js')
-      .require('/vendor/vue.min.js')
       .require('/core/vue-page.js?' + random)
       .then(boot)
   </script>

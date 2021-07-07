@@ -1,9 +1,9 @@
 
 import { parsePath, hack_options } from './utils'
 import Application from './application'
+import Vue from 'vue/dist/vue.common.prod'
 
-function Route (name, path, view, router) {
-  var keys = []
+function Route(name, path, view, router) {
   this.name = name
   this.label = ''
   this.alias = ''
@@ -15,8 +15,8 @@ function Route (name, path, view, router) {
     this.keys = []
     this.parts = null
   } else {
-    var parsed = parsePath(path);
-    this.regexp = parsed.regexp;
+    var parsed = parsePath(path)
+    this.regexp = parsed.regexp
     this.keys = parsed.keys
     this.parts = parsed.parts
   }
@@ -33,14 +33,14 @@ function Route (name, path, view, router) {
   this.currentView = null
   this.mounted = false
 }
-Route.prototype.loadView = function (mounted) {
+Route.prototype.loadView = function(mounted) {
   var that = this
   if (typeof this.view === 'function') {
-    this.view(function resolve (options) {
+    this.view(function resolve(options) {
       hack_options(that.router.app, options)
       that.viewComponent = options
       that.mount(mounted)
-    }, function reject () { })
+    }, function reject() { })
     return
   }
   if (this.view && typeof this.view === 'object') {
@@ -49,16 +49,16 @@ Route.prototype.loadView = function (mounted) {
     that.mount(mounted)
     return
   }
-  this.router.app.loadVue(this.view).then(function (component_) {
+  this.router.app.loadVue(this.view).then(function(component_) {
     that.viewComponent = component_
     that.mount(mounted)
   })
 }
 
-Route.prototype.render = function (mounted) {
+Route.prototype.render = function(mounted) {
   if (this.parent && !this.parent.mounted) {
     var that = this
-    this.parent.render(function (parent) {
+    this.parent.render(function(parent) {
       that.render()
     })
     return
@@ -69,7 +69,7 @@ Route.prototype.render = function (mounted) {
   }
   this.mount(mounted)
 }
-Route.prototype.mount = function (mounted) {
+Route.prototype.mount = function(mounted) {
   var router = this.router
   var app = router.app
   this.viewComponent.parent = (this.parent || app).vue
@@ -91,7 +91,7 @@ Route.prototype.mount = function (mounted) {
   mounted && mounted(this)
 }
 
-Route.prototype.$destroy = function () {
+Route.prototype.$destroy = function() {
   if (!this.mounted) return
   if (this.currentView) {
     this.currentView.$destroy()

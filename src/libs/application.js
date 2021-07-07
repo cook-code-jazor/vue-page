@@ -4,85 +4,86 @@ import { hasOwnProperty, parse_url, compile_path, hack_options, getType } from '
 import Router from './router'
 import Store from './store'
 import parse_component from './compiler'
+import Vue from 'vue/dist/vue.common.prod'
 
-function prepare_components (components) {
-  var components_ = {};
+function prepare_components(components) {
+  var components_ = {}
   for (var i = 0; i < components.length; i++) {
     components_[components[i]] = components[i]
   }
-  components = components_;
-  return components;
+  components = components_
+  return components
 }
 var components_loader = {
-  'string': function (val, app) {
-    return function (resolve, reject) {
-      app.loadVue(val).then(function (options) {
+  'string': function(val, app) {
+    return function(resolve, reject) {
+      app.loadVue(val).then(function(options) {
         hack_options(app, options)
         resolve(options)
       })['catch'](reject)
     }
   },
-  'function': function (val, app) {
-    return function (resolve, reject) {
-      val(function (options) {
+  'function': function(val, app) {
+    return function(resolve, reject) {
+      val(function(options) {
         hack_options(app, options)
         resolve(options)
       }, reject)
     }
   },
-  'object': function (val, app) {
-    return function (resolve, reject) {
+  'object': function(val, app) {
+    return function(resolve, reject) {
       hack_options(app, val)
-      resolve(val);
+      resolve(val)
     }
   }
-};
+}
 
-function register_components (app, components) {
+function register_components(app, components) {
   if (!components) return Promise.resolve(app)
   if (typeof components === 'function') {
-    return new Promise(components).then(function (components) {
+    return new Promise(components).then(function(components) {
       return register_components(app, components)
     })
   }
-  if (components instanceof Array) components = prepare_components(components);
-
+  if (components instanceof Array) components = prepare_components(components)
   for (var name in components) {
     if (!hasOwnProperty(components, name)) continue
     var value = components[name]
     if (!value) continue
-    var type = getType(value);
-    Vue.component(name, components_loader[type](value, app))
+    var type = getType(value)
+    var component_ = components_loader[type](value, app)
+    Vue.component(name, component_)
   }
   return Promise.resolve(app)
 }
 var __vue_cache = {}
-function load_as_vue (app, file) {
+function load_as_vue(app, file) {
   if (hasOwnProperty(__vue_cache, file)) {
-    return new Promise(function (resolved, reject) {
+    return new Promise(function(resolved, reject) {
       resolved(__vue_cache[file])
     })
   }
-  return app.getFileContents(file).then(function (res) {
+  return app.getFileContents(file).then(function(res) {
     __vue_cache[file] = parse_component(app, res, file)
     return __vue_cache[file]
   })
 }
-function register_routes (router, routes) {
+function register_routes(router, routes) {
   if (!routes) {
     return Promise.resolve(router.app)
   }
   if (typeof routes === 'string') {
-    return router.app.require(routes).then(function (routes) {
+    return router.app.require(routes).then(function(routes) {
       return register_routes(router, routes)
     })
   }
   if (typeof routes === 'function') {
-    return new Promise(routes).then(function (routes) {
+    return new Promise(routes).then(function(routes) {
       return register_routes(router, routes)
     })
   }
-  function parse (routes, parent, routeParent) {
+  function parse(routes, parent, routeParent) {
     for (var i = 0; i < routes.length; i++) {
       var route = router.addRoute(routes[i], parent, routeParent)
       var children = routes[i].children
@@ -95,12 +96,10 @@ function register_routes (router, routes) {
   return Promise.resolve(router.app)
 }
 
-
-function Application (options) {
-
+function Application(options) {
   this.options = options = options || {}
   options.componentExtension = options.componentExtension || '.vue'
-  options.viewPath = options.viewPath || '';
+  options.viewPath = options.viewPath || ''
 
   var root = options.root
 
@@ -113,7 +112,7 @@ function Application (options) {
   if (!window.history.pushState) {
     this.mode = 'hash'
   }
-  options.el = options.el || (function () {
+  options.el = options.el || (function() {
     var el = document.createElement('div')
     document.body.appendChild(el)
     return el
@@ -124,53 +123,53 @@ function Application (options) {
   this.currentRoute = null
   this.stopRoute = false
 }
-Application.prototype.parse = function (path) {
+Application.prototype.parse = function(path) {
   if (path.substr(0, 1) === '/') {
     return path
   }
   return this.root + '/' + path
 }
-Application.prototype.require = function (file) {
+Application.prototype.require = function(file) {
   if (this.views) {
-    var module = { exports: {} };
+    var module = { exports: {}};
     (new Function('module', 'exports', this.views[file]))(module, module.exports)
     return Promise.resolve(module.exports)
   }
   file = this.parse(file)
   return axios.require(file)
 }
-Application.prototype.getFileContents = function (file) {
+Application.prototype.getFileContents = function(file) {
   if (this.views) {
     return Promise.resolve(this.views[file])
   }
   file = this.parse(file)
-  return axios.get(file).then(function (response) { return response.data })
+  return axios.get(file).then(function(response) { return response.data })
 }
-Application.prototype.loadVue = function (file) {
+Application.prototype.loadVue = function(file) {
   if (hasOwnProperty(this.options, 'viewPath')) {
     file = compile_path(this.options['viewPath'], file)
   }
   return load_as_vue(this, file + this.options.componentExtension)
 }
-Application.prototype.component = function (file, ignoreViewPath) {
+Application.prototype.component = function(file, ignoreViewPath) {
   if (ignoreViewPath !== true) {
     if (hasOwnProperty(this.options, 'viewPath')) {
       file = compile_path(this.options['viewPath'], file)
     }
   }
   var that = this
-  return function (resolve, reject) {
-    load_as_vue(this, file + this.options.componentExtension).then(function (res) {
+  return function(resolve, reject) {
+    load_as_vue(this, file + this.options.componentExtension).then(function(res) {
       hack_options(that, res)
       resolve(res)
     })['catch'](reject)
   }.bind(this)
 }
-Application.prototype.boot = function () {
+Application.prototype.boot = function() {
   var promise
   var _this = this
   if (typeof this.store === 'string') {
-    promise = this.require(this.store).then(function (options) {
+    promise = this.require(this.store).then(function(options) {
       _this.store = new Store(options)
       return _this
     })
@@ -178,24 +177,24 @@ Application.prototype.boot = function () {
     promise = Promise.resolve(this)
   }
 
-  promise = promise.then(function (app) {
+  promise = promise.then(function(app) {
     return Promise.all([register_components(app, app.options.components), register_routes(app.router, app.options.routes)]).then(res => app)
   })
   if (this.options.bootstrap) {
-    promise.then(function (app) {
+    promise.then(function(app) {
       return app.loadVue(app.options.bootstrap)
-    }).then(function (options) {
+    }).then(function(options) {
       _this.mount(options)
     })
   } else {
-    promise.then(function (app) {
+    promise.then(function(app) {
       app.mount(null)
     })
   }
 
   return this
 }
-Application.prototype.mount = function (options) {
+Application.prototype.mount = function(options) {
   if (!options) {
     this.viewePlaceHolder = this.el
     if (this.options.mounted) {
@@ -221,7 +220,7 @@ Application.prototype.mount = function (options) {
   }
   this.route()
 }
-Application.prototype.display = function (route) {
+Application.prototype.display = function(route) {
   if (!this.viewePlaceHolder) {
     throw new Error('no view placeholder')
   }
@@ -233,7 +232,7 @@ Application.prototype.display = function (route) {
   }
   this.currentView = route
 }
-Application.prototype.route = function () {
+Application.prototype.route = function() {
   var request = parse_url(this.mode, hasOwnProperty(this.options, 'suffix') ? this.options.suffix : null)
   var route = this.router.match(request.path)
   if (!route) throw new Error('route not found')
