@@ -1,4 +1,4 @@
-/**
+/**!
   * vue-page v2.0.0
   * @license MIT
   */

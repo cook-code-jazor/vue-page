@@ -1,10 +1,22 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
   mode: 'production',
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin({
+        test: /core\/(.+?)\.js(\?.*)?$/i,    //匹配参与压缩的文件
+        parallel: true,    //使用多进程并发运行
+        terserOptions: {    //Terser 压缩配置
+            output:{comments: false}
+        },
+        extractComments: false,
+    })],
+},
   plugins: [
     new HtmlWebpackPlugin({
       publicPath: './public/',
