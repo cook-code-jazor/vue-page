@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: './src/index.js',
@@ -14,6 +15,9 @@ module.exports = {
       filename: 'index.html',
       title: 'VuePage',
     }),
+    new CopyPlugin({patterns : [
+        { from: "./public/", to: "./" , transform: (content) => content },
+      ]}),
   ],
   output: {
     filename: 'core/vue-page.js',
