@@ -4,6 +4,16 @@ import qs from './qs'
 
 export var toString = Object.prototype.toString;
 
+
+export function hack_options(app, options) {
+  var beforeCreate = options.beforeCreate
+  options.beforeCreate = function() {
+    this.$app = app
+    this.$router = app.router
+    this.$route = app.currentRoute
+    beforeCreate && beforeCreate.apply(this, arguments)
+  }
+}
 export function compile_path(a, b) {
   if (!a) return b
   if (!b) return a

@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>VuePage</title>
   <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-  <meta charset="utf-8"/>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta charset="utf-8" />
   <script src="/core/mini-promise.js"></script>
   <script src="/core/dependence.js"></script>
 </head>
+
 <body>
-<div id="app"></div>
-<script>
-  
-  function BootVuePage(){
+  <div id="app"></div>
+  <script>
+
+    function BootVuePage() {
       VueView.boot({
         el: document.getElementById('app'),
         root: '/apps/home',
@@ -31,14 +33,15 @@
           resolve(Route.create())
         }
       });
-  }
-  const random = +new Date()
-  Dependence()
-  .when(!window.JSON, '/vendor/json3.min.js')
-  .when(!window.Promise, '/vendor/promise.min.js')
-  .require('/vendor/axios.min.js', '/vendor/vue.min.js')
-  .require('/core/vue-page.js?' + random, '/core/vue-page-utils.js?' + random, '/core/route-generator.js?' + random)
-  .then(BootVuePage)
-</script>
+    }
+    const random = +new Date()
+    Dependence()
+      .when(!window.JSON, '/vendor/json3.min.js')
+      .when(!window.Promise, '/vendor/promise.min.js')
+      .require('/vendor/axios.min.js', '/vendor/vue.min.js')
+      .require('/core/vue-page.js?' + random, '/core/vue-page-utils.js?' + random, '/core/route-generator.js?' + random)
+      .then(BootVuePage)
+  </script>
 </body>
+
 </html>
