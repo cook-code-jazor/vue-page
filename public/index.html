@@ -13,34 +13,35 @@
 <body>
   <div id="app"></div>
   <script>
+    function createRoutes() {
+      let Route = VASPA.RG()
+      Route('/').name('index').view('index').label('首页')
+      Route('/user').view('user/wrapper', true).group(function () {
+        Route('index').view('user/index')
+        Route('info/:userid').view('user/info1')
+        Route('info').view('user/info')
+      });
+      Route('*').name('notfound').view('404').label('页面不存在')
 
-    function BootVuePage() {
-      VueView.boot({
+      return Route.create();
+    }
+
+    function boot() {
+      VASPA.boot({
         el: document.getElementById('app'),
         root: '/apps/home',
         bootstrap: 'bootstrap',
         components: ['name'],
-        routes: function (resolve) {
-          var Route = RouteGenerator
-          Route('/').name('index').view('index').label('首页')
-          Route('/user').view('user/wrapper', true).group(function () {
-            Route('index').view('user/index')
-            Route('info/:userid').view('user/info1')
-            Route('info').view('user/info')
-          });
-          Route('*').name('notfound').view('404').label('页面不存在')
-
-          resolve(Route.create())
-        }
+        routes: createRoutes()
       });
     }
     const random = +new Date()
     Dependence()
       .when(!window.JSON, '/vendor/json3.min.js')
       .when(!window.Promise, '/vendor/promise.min.js')
-      .require('/vendor/axios.min.js', '/vendor/vue.min.js')
-      .require('/core/vue-page.js?' + random, '/core/vue-page-utils.js?' + random, '/core/route-generator.js?' + random)
-      .then(BootVuePage)
+      .require('/vendor/vue.min.js')
+      .require('/core/vue-page.js?' + random)
+      .then(boot)
   </script>
 </body>
 

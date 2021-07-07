@@ -2,8 +2,7 @@
 import path2regexp from './path2regexp'
 import qs from './qs'
 
-export var toString = Object.prototype.toString;
-
+export var toString = Object.prototype.toString
 
 export function hack_options(app, options) {
   var beforeCreate = options.beforeCreate
@@ -45,10 +44,21 @@ export function hasOwnProperty(obj, attr) {
   return Object.prototype.hasOwnProperty.call(obj, attr)
 }
 
-export function getType(instance){
-  return toString.apply(instance).replace(/\[object (.+?)\]/,"$1").toLowerCase()
+export function getType(instance) {
+  return toString.apply(instance).replace(/\[object (.+?)\]/, '$1').toLowerCase()
 }
 
+export function deepClone(source) {
+  var targetObj = source.constructor === Array ? [] : {}
+  Object.keys(source).forEach(function(key) {
+    if (source[key] && typeof source[key] === 'object') {
+      targetObj[key] = deepClone(source[key])
+    } else {
+      targetObj[key] = source[key]
+    }
+  })
+  return targetObj
+}
 export function keys2params(keys, match) {
   var len = keys.length
   var params = {}; var value = ''
@@ -81,13 +91,12 @@ function path_split(path, keys) {
   }
   return result
 }
-export function parsePath(path){
-  
+export function parsePath(path) {
   var keys = []
   var regexp = (path instanceof RegExp) ? path : path2regexp(path, keys)
   var parts = path_split(path, keys)
 
-  return {regexp, keys, parts}
+  return { regexp, keys, parts }
 }
 
 export function wrapper_call(args, body) {
