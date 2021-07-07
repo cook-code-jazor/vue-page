@@ -1,4 +1,4 @@
-/**!
+/** !
   * vue-page v2.0.0
   * @license MIT
   */
@@ -8,7 +8,7 @@ import Route from './libs/route'
 import Application from './libs/application'
 import Store from './libs/store'
 
-(function (global, factory) {
+(function(global, factory) {
   if (!window.Vue) {
     throw new Error('\'Vue\' not import')
   }
@@ -16,26 +16,27 @@ import Store from './libs/store'
     throw new Error('\'axios\' not import')
   }
   window.VueView = factory()
-}(this || window, function () {
+}(this || window, function() {
   'use strict'
 
-  var vue_page = function () { }
-  vue_page.Application = Application
-  vue_page.Store = Store
-  vue_page.Router = Router
-  vue_page.Route = Route
-  vue_page.$router = null
-  vue_page.$app = null
-  vue_page.boot = function (app) {
+  var vue_page = {
+    Application: Application,
+    Store: Store,
+    Router: Router,
+    Route: Route,
+    $router: null,
+    $app: null
+  }
+  vue_page.boot = function(app) {
     if (!(app instanceof Application)) {
       app = new Application(app)
     }
     if (app.mode === 'hash') {
-      window.onhashchange = function () {
+      window.onhashchange = function() {
         if (app.stopRoute !== true) app.route()
       }
     } else {
-      window.onpopstate = function () {
+      window.onpopstate = function() {
         if (app.stopRoute !== true) app.route()
       }
     }
