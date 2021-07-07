@@ -22,6 +22,9 @@
     return Object.prototype.hasOwnProperty.call(obj, attr)
   }
   var toString = Object.prototype.toString;
+  var getType = function(instance){
+    return toString.apply(instance).replace(/\[object (.+?)\]/,"$1").toLowerCase()
+  }
   
   /** hack axios*/
   var axios_ = (function() {
@@ -594,6 +597,39 @@
       beforeCreate && beforeCreate.apply(this, arguments)
     }
   }
+  function prepare_components(components){
+    var components_ = {};
+    for(var i = 0; i < components.length; i++){
+      components_[components[i]] = components[i]
+    }
+    components = components_;
+    return components;
+  }
+  var components_loader = {
+    'string' : function(val, app){
+      return function(resolve, reject) {
+        app.loadVue(val).then(function(options) {
+          hack_options(app, options)
+          resolve(options)
+        })['catch'](reject)
+      }
+    },
+    'function': function(val, app){
+      return function(resolve, reject) {
+        val(function(options) {
+          hack_options(app, options)
+          resolve(options)
+        }, reject)
+      }
+    },
+    'object': function(val, app){
+      return function(resolve, reject) {
+        hack_options(app, val)
+        resolve(val);
+      }
+    }
+  };
+
   function register_components(app, components) {
     if (!components) return Promise.resolve(app)
     if (typeof components === 'function') {
@@ -601,39 +637,14 @@
         return register_components(app, components)
       })
     }
-    if(components instanceof Array){
-      var components_ = {};
-      for(var i = 0; i < components.length; i++){
-        components_[components[i]] = 'components' + '/' + components[i]
-      }
-      components = components_;
-    }
+    if(components instanceof Array) components = prepare_components(components);
+
     for (var name in components) {
       if (!hasOwnProperty(components, name)) continue
       var value = components[name]
       if (!value) continue
-      if (typeof value === 'string') {
-        value = (function(val, app) {
-          return function(resolve, reject) {
-            app.loadVue(val).then(function(options) {
-              hack_options(app, options)
-              resolve(options)
-            })['catch'](reject)
-          }
-        })(value, app)
-      } else if (typeof value === 'function') {
-        value = (function(val, app) {
-          return function(resolve, reject) {
-            val(function(options) {
-              hack_options(app, options)
-              resolve(options)
-            }, reject)
-          }
-        })(value, app)
-      } else {
-        hack_options(app, value)
-      }
-      Vue.component(name, value)
+      var type = getType(value);
+      Vue.component(name, components_loader[type](value, app))
     }
     return Promise.resolve(app)
   }
@@ -760,9 +771,7 @@
     }
 
     promise = promise.then(function(app) {
-      return register_components(app, app.options.components)
-    }).then(function(app) {
-      return register_routes(app.router, app.options.routes)
+      return Promise.all([register_components(app, app.options.components), register_routes(app.router, app.options.routes)]).then(res=> app)
     })
     if (this.options.bootstrap) {
       promise.then(function(app) {

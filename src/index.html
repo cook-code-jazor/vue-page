@@ -5,13 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <meta charset="utf-8"/>
-    <script>
-      less = {
-        onReady: false
-      }
-    </script>
-  <script type="text/javascript" src="core/mini-promise.js"></script>
-  <script type="text/javascript" src="core/dependence.js"></script>
+  <script src="/core/mini-promise.js"></script>
+  <script src="/core/dependence.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -21,6 +16,8 @@
       VueView.boot({
         el: document.getElementById('app'),
         root: '/apps/home',
+        bootstrap: 'bootstrap',
+        components: ['name'],
         routes: function (resolve) {
           var Route = RouteGenerator
           Route('/').name('index').view('index').label('首页')
@@ -34,14 +31,12 @@
         }
       });
   }
-MiniPromise.resolve('hello world!').then(res=>{
-  console.log(res)
-})
+  const random = +new Date()
   Dependence()
   .when(!window.JSON, 'vendor/json3.min.js')
   .when(!window.Promise, 'vendor/promise.min.js')
-  .require('vendor/less/less.min.js', 'vendor/axios.min.js', 'vendor/vue.min.js')
-  .require('core/vue-page.js', 'core/vue-page-utils.js', 'core/route-generator.js')
+  .require('vendor/axios.min.js', 'vendor/vue.min.js')
+  .require('core/vue-page.js?' + random, 'core/vue-page-utils.js?' + random, 'core/route-generator.js?' + random)
   .then(BootVuePage)
 </script>
 </body>
