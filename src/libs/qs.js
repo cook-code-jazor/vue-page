@@ -1,3 +1,6 @@
+
+import { hasOwnProperty } from './utils'
+
 export default (function() {
 	function c(g) {
 		if (!g || typeof g !== "string") {

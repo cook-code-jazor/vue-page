@@ -1,20 +1,29 @@
 <template>
-  <div>用户信息 {{userId}}  {{age}}</div>
+  <div>
+    <div>用户信息 {{userId}}  {{age1}}</div>
+    <p><a href="javascript:void(0)" @click="addOne">加1</a></p>
+  </div>
 </template>
 <script>
 
 export default {
   data : function(){
     return {
-      userId : 0,
-      age: 23
+      userId : 0
     }
   },
   computed: {
-    age: App.store.getter('age')
+    ...App.store.getter({
+      age1 : store => store.age
+    })
   },
   mounted : function(){
     this.userId = this.$route.params.userid
+  },
+  methods: {
+    addOne: function(){
+      App.store.commit('age', this.age1+1)
+    }
   }
 }
 </script>

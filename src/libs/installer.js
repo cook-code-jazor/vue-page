@@ -1,5 +1,5 @@
 import Loader from '../bootloader'
-import { deepClone } from './utils'
+import { deepClone, hasOwnProperty } from './utils'
 
 export default {
   install(Vue) {
