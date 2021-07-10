@@ -8,7 +8,7 @@
 <script>
   export default {
     name : 'index',
-    data(){
+    data: function(){
       return {
         name: 'hello vue!'
       }

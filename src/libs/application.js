@@ -170,6 +170,7 @@ Application.prototype.boot = function() {
   var _this = this
   if (typeof this.store === 'string') {
     promise = this.require(this.store).then(function(options) {
+
       _this.store = new Store(options)
       return _this
     })

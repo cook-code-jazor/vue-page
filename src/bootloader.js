@@ -1,8 +1,8 @@
-import Application from './application'
-import Store from './store'
-import Router from './router'
-import Route from './route'
-import RouteGenerator from './route-generator'
+import Application from './libs/application'
+import Store from './libs/store'
+import Router from './libs/router'
+import Route from './libs/route'
+import RouteGenerator from './libs/route-generator'
 import Vue from 'vue/dist/vue.common.prod'
 
 const Loader = {

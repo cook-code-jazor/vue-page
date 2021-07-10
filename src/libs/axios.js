@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { hasOwnProperty } from './utils'
 
 export default (function() {
   var require_cache = {}

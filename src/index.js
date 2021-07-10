@@ -2,7 +2,7 @@
   * VASPA => Vue Async Single Page Application
   */
 
-import Loader from './libs/bootloader'
+import Loader from './bootloader'
 import Installer from './libs/installer'
 import axios from 'axios'
 

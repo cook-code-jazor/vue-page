@@ -1,15 +1,19 @@
 <template>
-  <div>用户信息 {{userId}}</div>
+  <div>用户信息 {{userId}}  {{age}}</div>
 </template>
 <script>
 
 export default {
-  data(){
+  data : function(){
     return {
-      userId : 0
+      userId : 0,
+      age: 23
     }
   },
-  mounted(){
+  computed: {
+    age: App.store.getter('age')
+  },
+  mounted : function(){
     this.userId = this.$route.params.userid
   }
 }
