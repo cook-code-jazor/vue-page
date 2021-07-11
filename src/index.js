@@ -9,5 +9,5 @@ import axios from 'axios'
 (function() {
   Loader.use(Installer)
   window.axios = axios
-  window.VASPA = Loader
+  window.vaspa = Loader
 })()

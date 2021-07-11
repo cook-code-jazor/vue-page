@@ -1,5 +1,5 @@
 ;(function(){
-    var Route = VASPA.RG()
+    var Route = vaspa.RG()
     Route('/').name('index').view('index').label('首页')
     Route('/user').view('user/wrapper', true).group(function () {
         Route('index').view('user/index')
