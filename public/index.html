@@ -6,41 +6,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <meta charset="utf-8" />
-  <script src="/core/mini-promise.js"></script>
-  <script src="/core/dependence.js"></script>
+  <script src="/vendor/promise.min.js"></script>
+  <script src="/core/vue-page.js"></script>
 </head>
 
 <body>
   <div id="app"></div>
   <script>
-    function routes() {
-      var Route = VASPA.RG()
-      Route('/').name('index').view('index').label('首页')
-      Route('/user').view('user/wrapper', true).group(function () {
-        Route('index').view('user/index')
-        Route('info/:userid').view('user/info1')
-        Route('info').view('user/info')
-      });
-      Route('*').name('notfound').view('404').label('页面不存在')
-
-      return Route.create();
-    }
-
-    function boot() {
-      VASPA.boot({
-        el: document.getElementById('app'),
-        root: '/apps/home',
-        bootstrap: 'bootstrap',
-        store: 'store/index.js',
-        routes: routes()
-      });
-    }
-    var random = +new Date()
-    Dependence()
-      .when(!window.JSON, '/vendor/json3.min.js')
-      .when(!window.Promise, '/vendor/promise.min.js')
-      .require('/core/vue-page.js?' + random)
-      .then(boot)
+    VASPA.boot({
+      el: document.getElementById('app'),
+      root: '/apps/home',
+      bootstrap: 'bootstrap',
+      store: 'store/index.js',
+      routes: 'route/index.js'
+    });
   </script>
 </body>
 

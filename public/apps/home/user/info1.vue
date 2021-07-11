@@ -12,11 +12,9 @@ export default {
       userId : 0
     }
   },
-  computed: {
-    ...App.store.getter({
-      age1 : store => store.age
-    })
-  },
+  computed: App.store.getter({
+      age1 : function(store){return  store.age}
+    }),
   mounted : function(){
     this.userId = this.$route.params.userid
   },
