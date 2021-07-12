@@ -5,6 +5,7 @@
 import Loader from './bootloader'
 import Installer from './libs/installer'
 import axios from 'axios'
+import './libs/promise.min'
 
 (function() {
   Loader.use(Installer)
