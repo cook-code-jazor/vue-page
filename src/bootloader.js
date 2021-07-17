@@ -12,7 +12,8 @@ const Loader = {
   Router: Router,
   Route: Route,
   $router: null,
-  $app: null
+  $app: null,
+  $vue: Vue
 }
 Loader.use = function(installer) {
   const args = [Vue]

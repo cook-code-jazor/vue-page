@@ -91,8 +91,8 @@ function __constructor() {
     stacks[stacks.length - 1].rules.push(rule)
     return rule
   }
-  Route.create = function() {
-    return root.create()
+  Route.create = function(baseAt) {
+    return root.create(baseAt || '')
   }
   Route.group = function(prefix, fn) {
     return Route(prefix).group(fn)
