@@ -5,16 +5,18 @@ import Router from './router'
 import Store from './store'
 import parse_component from './compiler'
 import Vue from 'vue/dist/vue.common.prod'
+import Route from './route'
 
 function prepare_components(components) {
-  var components_ = {}
-  for (var i = 0; i < components.length; i++) {
+  const components_ = {}
+  for (let i = 0; i < components.length; i++) {
     components_[components[i]] = components[i]
   }
   components = components_
   return components
 }
-var components_loader = {
+
+const components_loader = {
   'string': function(val, app) {
     return function(resolve, reject) {
       app.loadVue(val).then(function(options) {
@@ -47,17 +49,19 @@ function register_components(app, components) {
     })
   }
   if (components instanceof Array) components = prepare_components(components)
-  for (var name in components) {
+  for (const name in components) {
     if (!hasOwnProperty(components, name)) continue
-    var value = components[name]
+    const value = components[name]
     if (!value) continue
-    var type = getType(value)
-    var component_ = components_loader[type](value, app)
+    const type = getType(value)
+    const component_ = components_loader[type](value, app)
     Vue.component(name, component_)
   }
   return Promise.resolve(app)
 }
-var __vue_cache = {}
+
+const __vue_cache = {}
+
 function load_as_vue(app, file) {
   if (hasOwnProperty(__vue_cache, file)) {
     return new Promise(function(resolved, reject) {
@@ -69,39 +73,13 @@ function load_as_vue(app, file) {
     return __vue_cache[file]
   })
 }
-function register_routes(router, routes) {
-  if (!routes) {
-    return Promise.resolve(router.app)
-  }
-  if (typeof routes === 'string') {
-    return router.app.require(routes).then(function(routes) {
-      return register_routes(router, routes)
-    })
-  }
-  if (typeof routes === 'function') {
-    return new Promise(routes).then(function(routes) {
-      return register_routes(router, routes)
-    })
-  }
-  function parse(routes, parent, routeParent) {
-    for (var i = 0; i < routes.length; i++) {
-      var route = router.addRoute(routes[i], parent, routeParent)
-      var children = routes[i].children
-      if (children && children.length > 0) {
-        parse(children, routes[i].withRouterView === false ? parent : route, route)
-      }
-    }
-  }
-  parse(routes, null, null)
-  return Promise.resolve(router.app)
-}
 
 function Application(options) {
   this.options = options = options || {}
   options.componentExtension = options.componentExtension || '.vue'
   options.viewPath = options.viewPath || ''
 
-  var root = options.root
+  const root = options.root
 
   this.views = hasOwnProperty(options, 'views') ? options.views : null
   this.router = new Router(this)
@@ -113,7 +91,7 @@ function Application(options) {
     this.mode = 'hash'
   }
   options.el = options.el || (function() {
-    var el = document.createElement('div')
+    const el = document.createElement('div')
     document.body.appendChild(el)
     return el
   })()
@@ -129,9 +107,15 @@ Application.prototype.parse = function(path) {
   }
   return this.root + '/' + path
 }
+Application.prototype.register = function(components) {
+  return register_components(this, components)
+}
+Application.prototype.registerWhenBoot = function() {
+  return register_components(this, this.options.components)
+}
 Application.prototype.require = function(file) {
   if (this.views) {
-    var module = { exports: {}};
+    const module = { exports: {}};
     (new Function('module', 'exports', this.views[file]))(module, module.exports)
     return Promise.resolve(module.exports)
   }
@@ -157,7 +141,7 @@ Application.prototype.component = function(file, ignoreViewPath) {
       file = compile_path(this.options['viewPath'], file)
     }
   }
-  var that = this
+  const that = this
   return function(resolve, reject) {
     load_as_vue(this, file + this.options.componentExtension).then(function(res) {
       hack_options(that, res)
@@ -166,11 +150,10 @@ Application.prototype.component = function(file, ignoreViewPath) {
   }.bind(this)
 }
 Application.prototype.boot = function() {
-  var promise
-  var _this = this
+  let promise
+  const _this = this
   if (typeof this.store === 'string') {
     promise = this.require(this.store).then(function(options) {
-
       _this.store = new Store(options)
       return _this
     })
@@ -179,7 +162,10 @@ Application.prototype.boot = function() {
   }
 
   promise = promise.then(function(app) {
-    return Promise.all([register_components(app, app.options.components), register_routes(app.router, app.options.routes)]).then(res => app)
+    return Promise.all([
+      app.registerWhenBoot(),
+      app.router.register(app.options.routes)
+    ]).then(res => app)
   })
   if (this.options.bootstrap) {
     promise.then(function(app) {
@@ -207,10 +193,11 @@ Application.prototype.mount = function(options) {
   var vue = new Vue(options)
   vue.$route = null
   vue.$router = this.router
+  vue.$store = this.store
   vue.$app = this
   vue.$mount()
   this.el.parentNode.replaceChild(vue.$el, this.el)
-  var views = vue.$el.getElementsByTagName('router-view')
+  const views = vue.$el.getElementsByTagName('router-view')
   if (views.length === 0) {
     return
   }
@@ -223,9 +210,13 @@ Application.prototype.mount = function(options) {
 }
 Application.prototype.display = function(route) {
   if (!this.viewePlaceHolder) {
+    if (this instanceof Route) {
+      Application.prototype.display.call(this.parent || route.app, route)
+      return
+    }
     throw new Error('no view placeholder')
   }
-  var vue = route.vue
+  const vue = route.vue
   this.viewePlaceHolder.parentNode.replaceChild(vue.$el, this.viewePlaceHolder)
   this.viewePlaceHolder = vue.$el
   if (this.currentView && this.currentView !== route) {
@@ -234,12 +225,31 @@ Application.prototype.display = function(route) {
   this.currentView = route
 }
 Application.prototype.route = function() {
-  var request = parse_url(this.mode, hasOwnProperty(this.options, 'suffix') ? this.options.suffix : null)
-  var route = this.router.match(request.path)
-  if (!route) throw new Error('route not found')
-  this.currentRoute = route
-  route.query = request.query
-  route.render()
+  function goto_(app, request) {
+    const route = app.router.match(request.path)
+    if (!route) throw new Error('route not found')
+
+    function setAndRoute(route) {
+      app.currentRoute = route
+      app.currentRoute.query = request.query
+      app.currentRoute.render()
+    }
+    if (app.options.beforeRoute) {
+      app.options.beforeRoute.call(app, app.currentRoute, (nextRoute) => {
+        setAndRoute(nextRoute || route)
+      })
+      return
+    }
+    setAndRoute(route)
+  }
+  const request = parse_url(this.mode, hasOwnProperty(this.options, 'suffix') ? this.options.suffix : null)
+  if (this.options.beforeMatch) {
+    this.options.beforeMatch.call(this, request, () => {
+      goto_(this, request)
+    })
+    return
+  }
+  goto_(this, request)
 }
 
 export default Application

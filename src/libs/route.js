@@ -76,6 +76,7 @@ Route.prototype.mount = function(mounted) {
   var view = new Vue(this.viewComponent)
   view.$route = this
   view.$router = router
+  view.$store = app.store
   view.$app = app
   view.$mount()
   if (!view.$el.getElementsByTagName) {

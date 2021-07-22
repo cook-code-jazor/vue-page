@@ -18,11 +18,40 @@ function get_alias_route(destRoute, sourceRoute) {
   destRoute.sourceRoute = sourceRoute
   return destRoute
 }
+function register_routes(router, routes) {
+  if (!routes) {
+    return Promise.resolve(router.app)
+  }
+  if (typeof routes === 'string') {
+    return router.app.require(routes).then(function(routes) {
+      return register_routes(router, routes)
+    })
+  }
+  if (typeof routes === 'function') {
+    return new Promise(routes).then(function(routes) {
+      return register_routes(router, routes)
+    })
+  }
+  function parse(routes, parent, routeParent) {
+    for (var i = 0; i < routes.length; i++) {
+      var route = router.addRoute(routes[i], parent, routeParent)
+      var children = routes[i].children
+      if (children && children.length > 0) {
+        parse(children, routes[i].withRouterView === false ? parent : route, route)
+      }
+    }
+  }
+  parse(routes, null, null)
+  return Promise.resolve(router.app)
+}
 function Router(app) {
   this.app = app
   this.routes = []
   this.count = 0
   this.routesMap = {}
+}
+Router.prototype.register = function(routes) {
+  return register_routes(this, routes)
 }
 Router.prototype.addRoute = function(component, parent, routeParent) {
   if (component instanceof Array) {

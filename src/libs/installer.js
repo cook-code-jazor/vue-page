@@ -5,7 +5,7 @@ export default {
   install(Vue) {
     if (!Function.prototype.bind) {
       Function.prototype.bind = function(c) {
-        var d = this;
+        var d = this
         return function() {
           return d.apply(c || null, arguments)
         }
@@ -16,9 +16,9 @@ export default {
         if (!d) {
           return false
         }
-        c = c || 0;
+        c = c || 0
         return this.slice(c, c + d.length) === d
-      };
+      }
       String.prototype.endsWith = function a(d, c) {
         if (!d) {
           return false
@@ -34,13 +34,13 @@ export default {
         if (!f) {
           return []
         }
-        var e = [];
+        var e = []
         if (f instanceof Array) {
           for (var c = 0; c < f.length; c++) {
             e.push(c)
           }
         } else {
-          if (typeof f === "object") {
+          if (typeof f === 'object') {
             for (var d in f) {
               if (!hasOwnProperty(f, d)) {
                 continue
@@ -76,7 +76,6 @@ export default {
         }
       }
     }
-
 
     Vue.prototype.$deepClone = deepClone
 

@@ -15,12 +15,14 @@ function parse_attrs(src) {
   return attrs
 }
 function parse_template(src) {
-  var regexp = /<(template|script|style)\b(?:.*?)(\/)?>|<\/(template|script|style)>/ig
-  var match
-  var stacks = []
-  var level = 0
+  const regexp = /<(template|script|style)\b(?:.*?)(\/)?>|<\/(template|script|style)>/ig
+  let match
+  const stacks = []
+  let level = 0
   while ((match = regexp.exec(src)) !== null) {
-    var name = match[1]; var isEnd = false; var isSelfClose = false
+    let name = match[1]
+    let isEnd = false
+    let isSelfClose = false
     if (name === undefined) {
       name = match[3]
       isEnd = true
@@ -30,14 +32,14 @@ function parse_template(src) {
     if (isEnd) {
       level--
       if (level < 0) throw new Error('template error: tag[' + name + '] not match')
-      var last = stacks[stacks.length - 1]
+      const last = stacks[stacks.length - 1]
       if (last.name !== name) throw new Error('template error: tag[' + name + '] not match')
       if (level > 0) stacks.pop()
       else {
         last['contentEnd'] = match.index
       }
     } else {
-      var attrs = parse_attrs(match[0])
+      const attrs = parse_attrs(match[0])
       if (isSelfClose) {
         stacks.push({ name: name, attrs: attrs, level: level + 1, start: match.index, close: true })
       } else {
@@ -46,14 +48,14 @@ function parse_template(src) {
       }
     }
   }
-  var result = {}
-  for (var i = 0; i < stacks.length; i++) {
-    var stack = stacks[i]
-    var tagName = stack.name
+  const result = {}
+  for (let i = 0; i < stacks.length; i++) {
+    const stack = stacks[i]
+    const tagName = stack.name
     if (stack.level !== 1 || (!stack.close && !hasOwnProperty(stack, 'contentEnd'))) throw new Error('template error: tag[' + tagName + '] not match')
     if (stack.close) continue
     if (!hasOwnProperty(result, tagName)) result[tagName] = { content: '', attrs: stack.attrs }
-    var contentLength = stack.contentEnd - stack.contentStart
+    const contentLength = stack.contentEnd - stack.contentStart
     if (contentLength === 0) continue
     if (tagName === 'script') {
       result[tagName].content += src.substr(stack.contentStart, contentLength) + '\r\n'
@@ -65,9 +67,9 @@ function parse_template(src) {
 }
 
 function appendStyles(styles) {
-  var head = document.head || document.getElementsByTagName('head')[0]
-  var ele = document.createElement('style')
-  var appended = false
+  const head = document.head || document.getElementsByTagName('head')[0]
+  const ele = document.createElement('style')
+  let appended = false
   ele.type = 'text/css'
   if (!ele.styleSheet) {
     ele.appendChild(document.createTextNode(styles))
@@ -77,27 +79,23 @@ function appendStyles(styles) {
   if (ele.styleSheet && !appended) ele.styleSheet.cssText = styles
 }
 function parse_component(app, src, file) {
-  var parts = parse_template(src)
-  var scriptComponent = hasOwnProperty(parts, 'script') ? parts['script'] : null
-  var templateComponent = hasOwnProperty(parts, 'template') ? parts['template'] : null
-  var styleComponent = hasOwnProperty(parts, 'style') ? parts['style'] : null
+  const parts = parse_template(src)
+  const scriptComponent = hasOwnProperty(parts, 'script') ? parts['script'] : null
+  const templateComponent = hasOwnProperty(parts, 'template') ? parts['template'] : null
+  const styleComponent = hasOwnProperty(parts, 'style') ? parts['style'] : null
 
-  var script = trim(scriptComponent ? scriptComponent.content : '')
-  var template = trim(templateComponent ? templateComponent.content : '')
-  var style = trim(styleComponent ? styleComponent.content : '')
+  let script = trim(scriptComponent ? scriptComponent.content : '')
+  const template = trim(templateComponent ? templateComponent.content : '')
+  const style = trim(styleComponent ? styleComponent.content : '')
   if (!script && !template) {
-    return {
-      render: function(h) {
-        return h('')
-      }
-    }
+    throw new Error('no script or template')
   }
   if (style) {
     if (styleComponent && styleComponent.attrs && hasOwnProperty(styleComponent.attrs, 'lang')) {
-      var type = styleComponent.attrs['lang']
+      const type = styleComponent.attrs['lang']
       if (type === 'less') {
         if (window.less) {
-          less.render(style, { compress: true }, function(e, result) {
+          window.less.render(style, { compress: true }, function(e, result) {
             if (e) throw e
             appendStyles(result.css)
           })
@@ -108,20 +106,11 @@ function parse_component(app, src, file) {
     }
   }
 
-  var options = null
-  var render = null
-  try {
-    if (template) {
-      render = Vue.compile(template)
-    }
-    if (!script) {
-      return {
-        render: render.render,
-        staticRenderFns: render.staticRenderFns
-      }
-    }
-  } catch (e) {
-    throw e
+  let options = null
+  const render = template ? Vue.compile(template) : null
+
+  if (!script && render) {
+    return render
   }
   if (!script.startsWith('export default')) {
     throw new Error('must export template options from ')
@@ -130,8 +119,9 @@ function parse_component(app, src, file) {
   script = script.replace(/^export default/, 'module.exports = ')
   script = script.replace(/\bimport(?:\()(.+?)(?:\))/ig, 'Component($1)')
   script = script.replace(/^(?:\s*)import(?:\s+)(\w+)(?:\s+)from(?:\s+)(.+?)/ig, 'var $1 = Component($2)')
-  var module = { exports: {}}
-  var idx = file.lastIndexOf('/'); var dir = ''
+  const module = { exports: {}}
+  const idx = file.lastIndexOf('/')
+  let dir = ''
   if (idx >= 0) {
     dir = file.substr(0, idx + 1)
   }
@@ -139,8 +129,8 @@ function parse_component(app, src, file) {
     wrapper_call({
       'module': module,
       'exports': module.exports,
-      'App': app,
-      'Component': function(file_) {
+      '$app': app,
+      '$component': function(file_) {
         file_ = compile_path(dir, file_)
         return app.component(file_, true)
       }
