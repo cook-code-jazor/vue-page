@@ -14,7 +14,7 @@ function parse_attrs(src) {
   }
   return attrs
 }
-function parse_template(src) {
+export function parse_template(src) {
   const regexp = /<(template|script|style)\b(?:.*?)(\/)?>|<\/(template|script|style)>/ig
   let match
   const stacks = []
@@ -66,7 +66,7 @@ function parse_template(src) {
   return result
 }
 
-function appendStyles(styles) {
+export function appendStyles(styles) {
   const head = document.head || document.getElementsByTagName('head')[0]
   const ele = document.createElement('style')
   let appended = false
