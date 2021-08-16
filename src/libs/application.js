@@ -235,7 +235,7 @@ Application.prototype.route = function() {
       app.currentRoute.render()
     }
     if (app.options.beforeRoute) {
-      app.options.beforeRoute.call(app, app.currentRoute, (nextRoute) => {
+      app.options.beforeRoute.call(app, app.currentRoute, route, (nextRoute) => {
         setAndRoute(nextRoute || route)
       })
       return
