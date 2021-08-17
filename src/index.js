@@ -8,6 +8,7 @@ import qs from './libs/qs'
 import axios from 'axios'
 import './libs/promise.min'
 import { createApp, createComponent, registerComponent } from './libs/cl'
+import {  hasOwnProperty, deepClone } from './libs/utils'
 
 (function() {
   Loader.use(Installer)
@@ -16,5 +17,7 @@ import { createApp, createComponent, registerComponent } from './libs/cl'
   Loader.createApp = createApp
   Loader.createComponent = createComponent
   Loader.registerComponent = registerComponent
+  Loader.hasOwnProperty = hasOwnProperty
+  Loader.deepClone = deepClone
   window.vaspa = Loader
 })()
