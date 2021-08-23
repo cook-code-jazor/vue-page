@@ -3,7 +3,7 @@ import Store from './libs/store'
 import Router from './libs/router'
 import Route from './libs/route'
 import RouteGenerator from './libs/route-generator'
-import Vue from 'vue/dist/vue.common.prod'
+import Vue from './vue/vue.min'
 
 const Loader = {
   Application: Application,
