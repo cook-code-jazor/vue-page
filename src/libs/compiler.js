@@ -1,5 +1,5 @@
 import { hasOwnProperty, compile_path, wrapper_call, trim } from './utils'
-import Vue from 'vue/dist/vue.common.prod'
+import Vue from '../vue/vue.min'
 
 function parse_attrs(src) {
   const regexp = /<(template|script|style)\b(.*?)(\/)?>/ig
