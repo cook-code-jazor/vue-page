@@ -14,7 +14,7 @@ module.exports = {
         terserOptions: {    //Terser 压缩配置
             output:{comments: false}
         },
-        extractComments: false,
+        //extractComments: false,
     })],
   },
   module: {
