@@ -12,8 +12,20 @@
 <body>
   <div id="app"></div>
   <script>
-    CreateApp(function (Vue, Store, Route) {
-
+    CreateApp(function (Vue, Store, Router) {
+        const app = createComponent('/app.html');
+        const app2 = function(resolve){
+            setTimeout(function (){
+                resolve({data(){return {message: '123'}},template: '<div @click="click1">hello world!{{message}}</div>', methods: {click1(){this.message= '1212121'}}})
+            }, 1000)
+        };
+        new Vue({
+            el: '#app',
+            render(h){
+                console.log(1)
+                return h(app2);
+            }
+        });
     })
   </script>
 </body>

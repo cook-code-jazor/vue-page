@@ -121,7 +121,7 @@ function getComponentContents($url, options) {
   }, options.axios || {})).then(function(response) {
     if (response.status >= 400 || !response.data) return null
     return CACHES__[$url] = response.data
-  })
+  }).catch(res => null)
 }
 export function registerComponent(name, value, options) {
   if (value === undefined) value = name
@@ -139,7 +139,10 @@ export function registerComponent(name, value, options) {
 export function createComponent(file, options) {
   return function(resolve, reject) {
     getComponentContents(file, options || {}).then(function(res) {
-      if (!res) return
+      if (!res) {
+        reject && reject();
+        return;
+      }
       resolve(parse_component(res, file))
     })
   }
