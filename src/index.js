@@ -8,7 +8,7 @@ import qs from './libs/qs'
 import axios from 'axios'
 import './libs/promise.min'
 import { createApp, createComponent, registerComponent } from './libs/cl'
-import {  hasOwnProperty, deepClone } from './libs/utils'
+import { hasOwnProperty, deepClone } from './libs/utils'
 
 (function() {
   Loader.use(Installer)
