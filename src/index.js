@@ -9,6 +9,7 @@ import Vue from './vue/vue.min'
 import Store from './vue/vuex.min'
 import Router from './vue/vue-router.min'
 import RouteGenerator from './libs/route-generator'
+import { createComponent, registerComponent } from './libs/cl'
 
 const addRoutes = Router.prototype.addRoutes
 Router.prototype.addRoutes = function(routes) {
@@ -18,6 +19,8 @@ Router.prototype.addRoutes = function(routes) {
 window.CreateApp = (resolve) => {
   resolve(Vue, Store, Router)
 }
+window.createComponent = createComponent
+window.registerComponent = registerComponent
 window.Route = RouteGenerator()
 window.Axios = Axios
 window.QueryString = function(search) {
