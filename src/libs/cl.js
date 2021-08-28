@@ -2,7 +2,7 @@
 import axios from './axios'
 import { hasOwnProperty, compile_path, wrapper_call, trim } from './utils'
 import { parse_template, appendStyles } from './compiler'
-import Vue from 'vue/dist/vue.common.prod'
+import Vue from '../vue/vue.min'
 
 if (!String.prototype.startsWith) {
   // eslint-disable-next-line no-extend-native
@@ -143,22 +143,4 @@ export function createComponent(file, options) {
       resolve(parse_component(res, file))
     })
   }
-}
-
-export function createApp(options, config) {
-  if (options && typeof options === 'string') {
-    options = {
-      component: options,
-      el: '#app'
-    }
-  }
-  options.el = options.el || '#app'
-  if (options.component && typeof options.component === 'string') {
-    createComponent(options.component, config)(function resolve(component) {
-      component.el = options.el
-      new Vue(component)
-    })
-    return
-  }
-  return new Vue(options)
 }

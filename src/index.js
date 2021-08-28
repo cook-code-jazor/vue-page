@@ -2,22 +2,24 @@
   * VASPA => Vue Async Single Page Application
   */
 
-import Loader from './bootloader'
-import Installer from './libs/installer'
-import qs from './libs/qs'
-import axios from 'axios'
 import './libs/promise.min'
-import { createApp, createComponent, registerComponent } from './libs/cl'
-import { hasOwnProperty, deepClone } from './libs/utils'
+import Axios from './libs/axios'
+import qs from 'qs'
+import Vue from './vue/vue.min'
+import Store from './vue/vuex.min'
+import Router from './vue/vue-router.min'
+import RouteGenerator from './libs/route-generator'
 
-(function() {
-  Loader.use(Installer)
-  Loader.qs = qs
-  Loader.axios = axios
-  Loader.createApp = createApp
-  Loader.createComponent = createComponent
-  Loader.registerComponent = registerComponent
-  Loader.hasOwnProperty = hasOwnProperty
-  Loader.deepClone = deepClone
-  window.vaspa = Loader
-})()
+const addRoutes = Router.prototype.addRoutes
+Router.prototype.addRoutes = function(routes) {
+  addRoutes.call(this, routes)
+}
+
+window.CreateApp = (resolve) => {
+  resolve(Vue, Store, Router)
+}
+window.Route = RouteGenerator()
+window.Axios = Axios
+window.QueryString = function(search) {
+  return qs.parse(search || (window.location.search ? window.location.substr(1) : ''))
+}

@@ -38,5 +38,6 @@ export default (function() {
       return require_cache[singlon_cache_tag]
     })
   }
+  axios_.origin = axios
   return axios_
 })()
