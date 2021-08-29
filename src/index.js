@@ -16,13 +16,13 @@ Router.prototype.addRoutes = function(routes) {
   addRoutes.call(this, routes)
 }
 
-window.CreateApp = (resolve) => {
+window.createApp = (resolve) => {
   resolve(Vue, Store, Router)
 }
 window.createComponent = createComponent
 window.registerComponent = registerComponent
 window.Route = RouteGenerator()
 window.Axios = Axios
-window.QueryString = function(search) {
+window.queryString = function(search) {
   return qs.parse(search || (window.location.search ? window.location.substr(1) : ''))
 }
