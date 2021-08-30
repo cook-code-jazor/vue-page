@@ -12,40 +12,37 @@
 <body>
   <div id="app"></div>
   <script>
-    createApp(function (Vue, Store, Router) {
-        const app = createComponent('/views/app.html');
-        const index = createComponent('/views/index.html');
-        const user = createComponent('/views/user.html');
-        const manage = createComponent('/views/manage.html');
+    function createRoutes(view) {
+      Route('/', view('/index'));
+      Route('/user', view('/user'));
 
-        Route('/', index);
-        Route('/user', user);
-        Route('/manage', manage, '/manage/index').group(function (){
-            Route('index').component({
-                render(h){
-                    return h('span','后台首页');
-                }
-            })
-            Route('users').component({
-                render(h){
-                    return h('span','后台用户');
-                }
-            })
+      Route('/manage', view('/manage'), '/manage/index').group(function () {
+        Route('index').component({
+          render(h) {
+            return h('span', '后台首页');
+          }
         })
-
-        const routes = Route.create();
-        console.log(routes)
-        const instance = new Vue({
-            el: '#app',
-            router: new Router({
-                mode: 'history',
-                routes
-            }),
-            render(h){
-                return h(app);
-            }
-        });
-    })
+        Route('users').component({
+          render(h) {
+            return h('span', '后台用户');
+          }
+        })
+      })
+      return Route.create();
+    }
+    createApp(function (createVue, createStore, createRouter, view) {
+      const app = createComponent(view('/app'));
+      createVue({
+        el: '#app',
+        router: createRouter({
+          mode: 'history',
+          routes: createRoutes(view)
+        }),
+        render(h) {
+          return h(app);
+        }
+      });
+    }, {viewRoot: '/views', viewSuffix: '.html'})
   </script>
 </body>
 

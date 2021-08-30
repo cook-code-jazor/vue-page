@@ -21,7 +21,7 @@ module.exports = {
       rules: [{
           test: /\.js$/,
           use: 'babel-loader',
-          exclude: /node_modules|public\/core|public\/vendor/
+          exclude: /node_modules|public\/vendor/
       }]
   },
   plugins: [
