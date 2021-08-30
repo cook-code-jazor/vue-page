@@ -13,17 +13,36 @@
   <div id="app"></div>
   <script>
     createApp(function (Vue, Store, Router) {
-        const app = createComponent('/app.html');
-        const app2 = function(resolve){
-            setTimeout(function (){
-                resolve({data(){return {message: '123'}},template: '<div @click="click1">hello world!{{message}}</div>', methods: {click1(){this.message= '1212121'}}})
-            }, 1000)
-        };
-        new Vue({
+        const app = createComponent('/views/app.html');
+        const index = createComponent('/views/index.html');
+        const user = createComponent('/views/user.html');
+        const manage = createComponent('/views/manage.html');
+
+        Route('/', index);
+        Route('/user', user);
+        Route('/manage', manage, '/manage/index').group(function (){
+            Route('index').component({
+                render(h){
+                    return h('span','后台首页');
+                }
+            })
+            Route('users').component({
+                render(h){
+                    return h('span','后台用户');
+                }
+            })
+        })
+
+        const routes = Route.create();
+        console.log(routes)
+        const instance = new Vue({
             el: '#app',
+            router: new Router({
+                mode: 'history',
+                routes
+            }),
             render(h){
-                console.log(1)
-                return h(app2);
+                return h(app);
             }
         });
     })

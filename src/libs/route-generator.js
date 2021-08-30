@@ -14,25 +14,25 @@ RouteGroup.prototype.view = function(path) {
   this._viewFrom = path
 }
 RouteGroup.prototype.create = function(parentPath) {
-  var result = []
-  for (var i = 0; i < this.rules.length; i++) {
+  let result = []
+  for (let i = 0; i < this.rules.length; i++) {
     result.push(this.rules[i].create(parentPath, this._viewFrom))
   }
   return result
 }
 
 function __constructor() {
-  function Route(path) {
-    var _name = ''
-    var _alias = ''
-    var _path = path || ''
-    var _view = ''
-    var _holder = false
-    var _params = null
-    var _group = null
-    var _meta = null
-    var _label = ''
-    var rule = {
+  function Route(path, component, redirectTo) {
+    let _name = ''
+    let _alias = ''
+    let _component = component || null
+    let _components = null
+    let _path = path || ''
+    let _group = null
+    let _redirect = redirectTo || null
+    let _props = false
+    let _meta = null
+    let rule = {
       name: function(name) {
         _name = name
         return this
@@ -41,12 +41,20 @@ function __constructor() {
         _alias = alias
         return this
       },
-      label: function(label) {
-        _label = label
+      component: function(component) {
+        _component = component
         return this
       },
-      params: function(params) {
-        _params = params
+      redirect: function(redirect) {
+        _redirect = redirect
+        return this
+      },
+      props: function(props) {
+        _props = props === undefined ? true : props
+        return this
+      },
+      components: function(components) {
+        _components = components
         return this
       },
       path: function(path) {
@@ -57,11 +65,6 @@ function __constructor() {
         _meta = meta
         return this
       },
-      view: function(view, holder) {
-        _view = view || _path
-        _holder = holder === true
-        return this
-      },
       group: function(fn) {
         _group = new RouteGroup()
         stacks.push(_group)
@@ -70,18 +73,19 @@ function __constructor() {
         return _group
       },
       create: function(parentPath, viewFrom) {
-        var path = _path
+        let path = _path
         if (path.substr(0, 1) !== '/') {
           path = compile_path(parentPath, path)
         }
-        var result = { name: _name, alias: _alias, path: path, view: compile_path(viewFrom, _view), label: _label, params: _params, meta: _meta }
+        const result = { path: path }
+        if(_name) result.name = _name
+        if(_alias) result.alias = _alias
+        if(_meta) result.meta = _meta
+        if(_props) result.props = _props
+        if(_components) result.components = _components
+        if(_component) result.component = _component
+        if(_redirect) result.redirect = _redirect
 
-        if (!_holder || !result.view) {
-          result.withRouterView = false
-        }
-        if (!result.name) {
-          result.name = path.replace(/(^\/)|(\/$)/g, '').replace(/\//g, '.')
-        }
         if (_group) {
           result.children = _group.create(result.path)
         }
@@ -97,8 +101,8 @@ function __constructor() {
   Route.group = function(prefix, fn) {
     return Route(prefix).group(fn)
   }
-  var root = new RouteGroup()
-  var stacks = [root]
+  const root = new RouteGroup()
+  const stacks = [root]
   return Route
 }
 
