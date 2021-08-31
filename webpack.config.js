@@ -26,13 +26,14 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      publicPath: './public/',
+      publicPath: '/',
       minify: false,
-      hash: false,
-      inject: false,
+      hash: true,
+      inject: 'head',
       template: './public/index.html',
       filename: 'index.html',
-      title: 'VuePage'
+      title: 'VuePage',
+      scriptLoading: 'blocking'
     }),
     new CopyPlugin(
       {
@@ -45,7 +46,6 @@ module.exports = {
   ],
   output: {
     filename: 'core/vue-page.js',
-    path: path.resolve(__dirname, 'dist'),
-    clean: true
+    path: path.resolve(__dirname, 'dist')
   }
 }

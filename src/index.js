@@ -42,5 +42,8 @@ window.registerComponent = registerComponent
 window.Route = RouteGenerator()
 window.Axios = Axios
 window.queryString = function (search) {
+  if (search && typeof search === 'object') {
+    return qs.stringify(search)
+  }
   return qs.parse(search || (window.location.search ? window.location.substr(1) : ''))
 }
