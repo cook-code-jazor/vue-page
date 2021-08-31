@@ -31,14 +31,29 @@ const createRouter = (options) => {
   options.routes && routeResolver(options.routes)
   return new Router(options)
 }
+const mergeOptions = (a, b) => {
+  for (const k in b) {
+    if (!b.hasOwnProperty(k)) continue
+    a[k] = b[k]
+  }
+  return a
+}
 
 function createApp (resolve, options = { viewRoot: '/', viewSuffix: '.html' }) {
   const viewParser = createViewParser(options)
 
   resolve(createVue, createStore, createRouter, viewParser)
 }
-window.quickStart = function (routes, store) {
-  function bootstrap (createVue, createStore, createRouter, view) {
+window.quickStart = function (routes, store, options) {
+  options = mergeOptions({ viewRoot: '/views', viewSuffix: '.html' }, (typeof routes === 'string' ? store : options) || {})
+
+  const bootstrap = typeof routes === 'string' ? function (createVue, createStore, createRouter, view) {
+    const app = view.component(routes)
+    createVue({
+      el: '#app',
+      render: h => h(app)
+    })
+  } : function (createVue, createStore, createRouter, view) {
     createVue({
       el: '#app',
       router: createRouter(routes),
@@ -46,7 +61,6 @@ window.quickStart = function (routes, store) {
       render: h => h('router-view')
     })
   }
-  const options = { viewRoot: '/views', viewSuffix: '.html' }
 
   return createApp(bootstrap, options)
 }
