@@ -30,12 +30,9 @@
           mode: 'history',
           routes: createRoutes(view)
         }),
-        render(h) {
-          return h(app);
-        }
+        render: (h) => h(app)
       });
     }, {viewRoot: '/views', viewSuffix: '.html'})
   </script>
 </body>
-
 </html>
