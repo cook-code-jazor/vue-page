@@ -26,26 +26,19 @@ module.exports = {
       cacheGroups: {
         defaultVendors: {
           name: 'vendors',
-          test: /[\\/]node_modules[\\/]/,
+          test: /[\\/](node_modules|vue)[\\/]/,
           priority: -10,
           reuseExistingChunk: true,
           chunks: 'initial'
         },
-        vue: {
-          name: 'vue',
-          test: /[\\/]vue[\\/]/,
-          priority: -15,
-          reuseExistingChunk: true,
-          chunks: 'initial'
-        },
         default: {
+          name: 'common',
           minChunks: 2,
           priority: -20,
           reuseExistingChunk: true
         }
       }
-    },
-    runtimeChunk: true
+    }
   },
   module: {
     rules: [{
