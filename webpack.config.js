@@ -15,30 +15,7 @@ module.exports = {
         output: { comments: false }
       }
       // extractComments: false,
-    })],
-    splitChunks: {
-      chunks: 'all',
-      minSize: 20000,
-      minRemainingSize: 0,
-      minChunks: 1,
-      maxAsyncRequests: 30,
-      maxInitialRequests: 30,
-      cacheGroups: {
-        defaultVendors: {
-          name: 'vendors',
-          test: /[\\/](node_modules|vue)[\\/]/,
-          priority: -10,
-          reuseExistingChunk: true,
-          chunks: 'initial'
-        },
-        default: {
-          name: 'common',
-          minChunks: 2,
-          priority: -20,
-          reuseExistingChunk: true
-        }
-      }
-    }
+    })]
   },
   module: {
     rules: [{
@@ -68,7 +45,7 @@ module.exports = {
       })
   ],
   output: {
-    filename: 'statics/[name].js?[hash:8]',
+    filename: 'statics/vue.js?[fullhash:8]',
     path: path.resolve(__dirname, 'dist'),
     clean: true
   }

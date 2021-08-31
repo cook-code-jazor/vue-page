@@ -31,7 +31,11 @@
       });
     }
     const options = {viewRoot: '/views', viewSuffix: '.html'}
-
+    createApp.Vue.component('test', {
+      render(h) {
+        return h('span', this.$slots.default)
+      }
+    });
     createApp(bootstrap , options)
   </script>
 </body>

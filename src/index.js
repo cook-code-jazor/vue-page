@@ -44,6 +44,8 @@ function createApp (resolve, options = { viewRoot: '/', viewSuffix: '.html' }) {
 
   resolve(createVue, createStore, createRouter, viewParser)
 }
+createApp.Vue = Vue
+
 window.quickStart = function (routes, store, options) {
   options = mergeOptions({ viewRoot: '/views', viewSuffix: '.html' }, (typeof routes === 'string' ? store : options) || {})
 
