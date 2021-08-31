@@ -32,11 +32,25 @@ const createRouter = (options) => {
   return new Router(options)
 }
 
-window.createApp = (resolve, options = { viewRoot: '/', viewSuffix: '.html' }) => {
+function createApp (resolve, options = { viewRoot: '/', viewSuffix: '.html' }) {
   const viewParser = createViewParser(options)
 
   resolve(createVue, createStore, createRouter, viewParser)
 }
+window.quickStart = function (routes, store) {
+  function bootstrap (createVue, createStore, createRouter, view) {
+    createVue({
+      el: '#app',
+      router: createRouter(routes),
+      store: createStore(store),
+      render: h => h('router-view')
+    })
+  }
+  const options = { viewRoot: '/views', viewSuffix: '.html' }
+
+  return createApp(bootstrap, options)
+}
+window.createApp = createApp
 window.createComponent = createComponent
 window.registerComponent = registerComponent
 window.Route = RouteGenerator()
