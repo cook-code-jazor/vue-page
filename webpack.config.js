@@ -9,13 +9,43 @@ module.exports = {
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin({
-      test: /core\/(.+?)\.js(\?.*)?$/i, // 匹配参与压缩的文件
+      test: /statics\/(.+?)\.js(\?.*)?$/i, // 匹配参与压缩的文件
       parallel: true, // 使用多进程并发运行
       terserOptions: { // Terser 压缩配置
         output: { comments: false }
       }
       // extractComments: false,
-    })]
+    })],
+    splitChunks: {
+      chunks: 'all',
+      minSize: 20000,
+      minRemainingSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30,
+      cacheGroups: {
+        defaultVendors: {
+          name: 'vendors',
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true,
+          chunks: 'initial'
+        },
+        vue: {
+          name: 'vue',
+          test: /[\\/]vue[\\/]/,
+          priority: -15,
+          reuseExistingChunk: true,
+          chunks: 'initial'
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
+      }
+    },
+    runtimeChunk: true
   },
   module: {
     rules: [{
@@ -45,7 +75,8 @@ module.exports = {
       })
   ],
   output: {
-    filename: 'core/vue-page.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: 'statics/[name].js?[hash:8]',
+    path: path.resolve(__dirname, 'dist'),
+    clean: true
   }
 }
