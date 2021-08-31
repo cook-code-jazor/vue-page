@@ -1,28 +1,24 @@
 
-function compile_path(a, b) {
+function compile_path (a, b) {
   if (!a) return b
   if (!b) return a
   if (a.substr(a.length - 1) !== '/') a += '/'
   if (b.substr(0, 1) === '/') return b
   return a + b
 }
-function RouteGroup() {
+function RouteGroup () {
   this.rules = []
-  this._viewFrom = null
 }
-RouteGroup.prototype.view = function(path) {
-  this._viewFrom = path
-}
-RouteGroup.prototype.create = function(parentPath) {
-  let result = []
+RouteGroup.prototype.create = function (parentPath) {
+  const result = []
   for (let i = 0; i < this.rules.length; i++) {
-    result.push(this.rules[i].create(parentPath, this._viewFrom))
+    result.push(this.rules[i].create(parentPath))
   }
   return result
 }
 
-function __constructor() {
-  function Route(path, component, redirectTo) {
+function __constructor () {
+  function Route (path, component, redirectTo) {
     let _name = ''
     let _alias = ''
     let _component = component || null
@@ -32,59 +28,59 @@ function __constructor() {
     let _redirect = redirectTo || null
     let _props = false
     let _meta = null
-    let rule = {
-      name: function(name) {
+    const rule = {
+      name: function (name) {
         _name = name
         return this
       },
-      alias: function(alias) {
+      alias: function (alias) {
         _alias = alias
         return this
       },
-      component: function(component) {
+      component: function (component) {
         _component = component
         return this
       },
-      redirect: function(redirect) {
+      redirect: function (redirect) {
         _redirect = redirect
         return this
       },
-      props: function(props) {
+      props: function (props) {
         _props = props === undefined ? true : props
         return this
       },
-      components: function(components) {
+      components: function (components) {
         _components = components
         return this
       },
-      path: function(path) {
+      path: function (path) {
         _path = path
         return this
       },
-      meta: function(meta) {
+      meta: function (meta) {
         _meta = meta
         return this
       },
-      group: function(fn) {
+      group: function (fn) {
         _group = new RouteGroup()
         stacks.push(_group)
-        fn()
+        fn(_group)
         stacks.pop()
-        return _group
+        return this
       },
-      create: function(parentPath, viewFrom) {
+      create: function (parentPath) {
         let path = _path
         if (path.substr(0, 1) !== '/') {
           path = compile_path(parentPath, path)
         }
         const result = { path: path }
-        if(_name) result.name = _name
-        if(_alias) result.alias = _alias
-        if(_meta) result.meta = _meta
-        if(_props) result.props = _props
-        if(_components) result.components = _components
-        if(_component) result.component = _component
-        if(_redirect) result.redirect = _redirect
+        if (_name) result.name = _name
+        if (_alias) result.alias = _alias
+        if (_meta) result.meta = _meta
+        if (_props) result.props = _props
+        if (_components) result.components = _components
+        if (_component) result.component = _component
+        if (_redirect) result.redirect = _redirect
 
         if (_group) {
           result.children = _group.create(result.path)
@@ -95,10 +91,10 @@ function __constructor() {
     stacks[stacks.length - 1].rules.push(rule)
     return rule
   }
-  Route.create = function(baseAt) {
+  Route.create = function (baseAt) {
     return root.create(baseAt || '')
   }
-  Route.group = function(prefix, fn) {
+  Route.group = function (prefix, fn) {
     return Route(prefix).group(fn)
   }
   const root = new RouteGroup()

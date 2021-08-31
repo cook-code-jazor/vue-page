@@ -24,6 +24,10 @@ Router.prototype.addRoutes = function (routes) {
 const createVue = (options) => new Vue(options)
 const createStore = (options) => new Store(options)
 const createRouter = (options) => {
+  if (options && options instanceof Array) {
+    routeResolver(options)
+    return new Router({ routes: options, mode: 'history' })
+  }
   options.routes && routeResolver(options.routes)
   return new Router(options)
 }

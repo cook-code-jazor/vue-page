@@ -17,23 +17,23 @@
       Route('/user', view('/user'));
 
       Route('/manage', view('/manage/layout'), '/manage/index').group(function () {
-        Route('index').component(view('/manage/index'))
-        Route('users').component(view('/manage/users'))
+        Route('index', view('/manage/index'))
+        Route('users', view('/manage/users'))
       })
       return Route.create();
     }
 
-    createApp(function (createVue, createStore, createRouter, view) {
+    function bootstrap(createVue, createStore, createRouter, view) {
       const app = view.component('/app');
       createVue({
         el: '#app',
-        router: createRouter({
-          mode: 'history',
-          routes: createRoutes(view)
-        }),
+        router: createRouter(createRoutes(view)),
         render: (h) => h(app)
       });
-    }, {viewRoot: '/views', viewSuffix: '.html'})
+    }
+    const options = {viewRoot: '/views', viewSuffix: '.html'}
+
+    createApp(bootstrap , options)
   </script>
 </body>
 </html>
