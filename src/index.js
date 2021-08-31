@@ -21,17 +21,17 @@ Router.prototype.addRoutes = function (routes) {
   addRoutes.call(this, routes)
 }
 
+const createVue = (options) => new Vue(options)
+const createStore = (options) => new Store(options)
+const createRouter = (options) => {
+  options.routes && routeResolver(options.routes)
+  return new Router(options)
+}
+
 window.createApp = (resolve, options = { viewRoot: '/', viewSuffix: '.html' }) => {
   const viewParser = createViewParser(options)
 
-  resolve(function (options) {
-    return new Vue(options)
-  }, function (options) {
-    return new Store(options)
-  }, function (options) {
-    options.routes && routeResolver(options.routes)
-    return new Router(options)
-  }, viewParser)
+  resolve(createVue, createStore, createRouter, viewParser)
 }
 window.createComponent = createComponent
 window.registerComponent = registerComponent

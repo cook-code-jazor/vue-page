@@ -16,22 +16,14 @@
       Route('/', view('/index'));
       Route('/user', view('/user'));
 
-      Route('/manage', view('/manage'), '/manage/index').group(function () {
-        Route('index').component({
-          render(h) {
-            return h('span', '后台首页');
-          }
-        })
-        Route('users').component({
-          render(h) {
-            return h('span', '后台用户');
-          }
-        })
+      Route('/manage', view('/manage/layout'), '/manage/index').group(function () {
+        Route('index').component(view('/manage/index'))
+        Route('users').component(view('/manage/users'))
       })
       return Route.create();
     }
     createApp(function (createVue, createStore, createRouter, view) {
-      const app = createComponent(view('/app'));
+      const app = view.component('/app');
       createVue({
         el: '#app',
         router: createRouter({
