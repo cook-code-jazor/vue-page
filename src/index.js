@@ -71,9 +71,18 @@ window.createComponent = createComponent
 window.registerComponent = registerComponent
 window.Route = RouteGenerator()
 window.Axios = Axios
-window.queryString = function (search) {
+
+/**
+ *
+ * @param search
+ * @param opts：
+ * arrayFormat：brackets,comma,indices,repeat
+ * indices：true indices, false repeat
+ * @returns {string|any}
+ */
+window.queryString = function (search, opts) {
   if (search && typeof search === 'object') {
-    return qs.stringify(search)
+    return qs.stringify(search, opts || {})
   }
-  return qs.parse(search || (window.location.search ? window.location.substr(1) : ''))
+  return qs.parse(search || (window.location.search ? window.location.substr(1) : ''), opts || {})
 }
