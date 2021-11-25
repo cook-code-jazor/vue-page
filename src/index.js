@@ -42,9 +42,8 @@ const mergeOptions = (a, b) => {
 function createApp (resolve, options = { viewRoot: '/', viewSuffix: '.html' }) {
   const viewParser = createViewParser(options)
 
-  resolve(createVue, createStore, createRouter, viewParser)
+  resolve(createVue, createStore, createRouter, viewParser, Vue)
 }
-createApp.Vue = Vue
 
 window.quickStart = function (routes, store, options) {
   options = mergeOptions({ viewRoot: '/views', viewSuffix: '.html' }, (typeof routes === 'string' ? store : options) || {})
@@ -66,6 +65,7 @@ window.quickStart = function (routes, store, options) {
 
   return createApp(bootstrap, options)
 }
+window.Vue = Vue
 window.createApp = createApp
 window.createComponent = createComponent
 window.registerComponent = registerComponent

@@ -45,7 +45,7 @@ module.exports = {
       })
   ],
   output: {
-    filename: 'statics/vue.js?[fullhash:8]',
+    filename: 'statics/create-app.js?[fullhash:8]',
     path: path.resolve(__dirname, 'dist'),
     clean: true
   }
