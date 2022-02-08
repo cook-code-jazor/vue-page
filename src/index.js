@@ -39,10 +39,10 @@ const mergeOptions = (a, b) => {
   return a
 }
 
-function createApp (resolve, options = { viewRoot: '/', viewSuffix: '.html' }) {
-  const viewParser = createViewParser(options)
+function createApp (resolve, options) {
+  options = options || { viewRoot: '/', viewSuffix: '.html' }
 
-  resolve(createVue, createStore, createRouter, viewParser, Vue)
+  resolve(createVue, createStore, createRouter, createViewParser(options), Vue)
 }
 
 window.quickStart = function (routes, store, options) {
