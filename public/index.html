@@ -30,13 +30,16 @@
         render: h => h(app)
       });
     }
-    const options = {viewRoot: '/views', viewSuffix: '.html'}
-    createApp.Vue.component('test', {
+    Vue.component('test', {
       render(h) {
         return h('span', this.$slots.default)
       }
     });
-    createApp(bootstrap , options)
+    createApp.require('/vendor/element-ui/index.js').then(function (ELEMENT) {
+      ELEMENT.install(Vue)
+      const options = {viewRoot: '/views', viewSuffix: '.html'}
+      createApp(bootstrap , options)
+    })
   </script>
 </body>
 </html>

@@ -10,6 +10,7 @@ import Store from './vue/vuex.min'
 import Router from './vue/vue-router.min'
 import RouteGenerator from './libs/route-generator'
 import { createComponent, registerComponent } from './libs/cl'
+import { wrapper_call } from './libs/utils'
 import routeResolver from './libs/routes-resolver'
 import createViewParser from './libs/create-view-parser'
 Vue.use(Store)
@@ -64,6 +65,30 @@ window.quickStart = function (routes, store, options) {
   }
 
   return createApp(bootstrap, options)
+}
+createApp.require = function (location, argvs) {
+  return Axios.get(location).then(res => {
+    if (argvs !== undefined && argvs && typeof argvs === 'object') {
+      wrapper_call(argvs, res.data)
+      return (argvs.hasOwnProperty('module') && argvs.hasOwnProperty('exports')) ? argvs.module.exports : null
+    }
+
+    const require = typeof argvs === 'function' ? argvs : null;
+
+    const module = { exports: {}}
+
+    wrapper_call({
+      module,
+      exports,
+      require: function (name) {
+        return name === 'vue' ? Vue
+          : name === 'axios' ? Axios
+            : name === 'qs' ? qs
+              : require(name)
+      }
+    }, res.data)
+    return module.exports
+  })
 }
 window.Vue = Vue
 window.createApp = createApp
