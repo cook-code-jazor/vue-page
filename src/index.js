@@ -10,7 +10,7 @@ import Store from './vue/vuex.min'
 import Router from './vue/vue-router.min'
 import RouteGenerator from './libs/route-generator'
 import { createComponent, registerComponent } from './libs/cl'
-import { wrapper_call } from './libs/utils'
+import Utils, { merge } from './libs/utils'
 import routeResolver from './libs/routes-resolver'
 import createViewParser from './libs/create-view-parser'
 import createClient from './libs/createClient'
@@ -70,7 +70,7 @@ window.quickStart = function (routes, store, options) {
 createApp.require = function (location, argvs) {
   return Axios.get(location).then(res => {
     if (argvs !== undefined && argvs && typeof argvs === 'object') {
-      wrapper_call(argvs, res.data)
+      Utils.wrapper_call(argvs, res.data)
       return (argvs.hasOwnProperty('module') && argvs.hasOwnProperty('exports')) ? argvs.module.exports : null
     }
 
@@ -78,7 +78,7 @@ createApp.require = function (location, argvs) {
 
     const module = { exports: {}}
 
-    wrapper_call({
+    Utils.wrapper_call({
       module,
       exports,
       require: function (name) {
@@ -116,6 +116,10 @@ window.Jazor.Vue = Vue
 window.Jazor.createAxios = createClient
 window.Jazor.queryString = queryString
 window.Jazor.qs = qs
+if (!window.Jazor.Utils) window.Jazor.Utils = {}
+
+window.Jazor.Utils = merge(window.Jazor.Utils, Utils)
+
 window.Jazor.SPWA = {
   createApp,
   createComponent,

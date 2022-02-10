@@ -59,3 +59,14 @@ export function wrapper_call (args, body) {
 
   return (new Function(argNames, body)).apply(null, argValues)
 }
+
+export default {
+  toString,
+  trim,
+  compile_path,
+  merge,
+  hasOwnProperty,
+  deepClone,
+  wrapper_call,
+  getType
+}
