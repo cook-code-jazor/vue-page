@@ -13,6 +13,7 @@ import { createComponent, registerComponent } from './libs/cl'
 import { wrapper_call } from './libs/utils'
 import routeResolver from './libs/routes-resolver'
 import createViewParser from './libs/create-view-parser'
+import createClient from './libs/createClient'
 Vue.use(Store)
 Vue.use(Router)
 
@@ -73,7 +74,7 @@ createApp.require = function (location, argvs) {
       return (argvs.hasOwnProperty('module') && argvs.hasOwnProperty('exports')) ? argvs.module.exports : null
     }
 
-    const require = typeof argvs === 'function' ? argvs : null;
+    const require = typeof argvs === 'function' ? argvs : null
 
     const module = { exports: {}}
 
@@ -90,12 +91,6 @@ createApp.require = function (location, argvs) {
     return module.exports
   })
 }
-window.Vue = Vue
-window.createApp = createApp
-window.createComponent = createComponent
-window.registerComponent = registerComponent
-window.Route = RouteGenerator()
-window.Axios = Axios
 
 /**
  *
@@ -105,9 +100,28 @@ window.Axios = Axios
  * indices：true indices, false repeat
  * @returns {string|any}
  */
-window.queryString = function (search, opts) {
+function queryString (search, opts) {
   if (search && typeof search === 'object') {
     return qs.stringify(search, opts || {})
   }
   return qs.parse(search || (window.location.search ? window.location.substr(1) : ''), opts || {})
+}
+
+window.Vue = Vue
+
+if (!window.Jazor) {
+  window.Jazor = {}
+}
+window.Jazor.SPWA = {
+  createApp,
+  createComponent,
+  registerComponent,
+  Route: RouteGenerator(),
+  Axios,
+  qs,
+  Vue,
+  Store,
+  Router,
+  queryString,
+  createAxios: createClient
 }

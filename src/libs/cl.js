@@ -6,7 +6,7 @@ import Vue from '../vue/vue.min'
 
 if (!String.prototype.startsWith) {
   // eslint-disable-next-line no-extend-native
-  String.prototype.startsWith = function b(d, c) {
+  String.prototype.startsWith = function b (d, c) {
     if (!d) {
       return false
     }
@@ -14,7 +14,7 @@ if (!String.prototype.startsWith) {
     return this.slice(c, c + d.length) === d
   }
   // eslint-disable-next-line no-extend-native
-  String.prototype.endsWith = function a(d, c) {
+  String.prototype.endsWith = function a (d, c) {
     if (!d) {
       return false
     }
@@ -25,7 +25,7 @@ if (!String.prototype.startsWith) {
   }
 }
 if (!Object.merge) {
-  Object.merge = function(c, e) {
+  Object.merge = function (c, e) {
     if (!e) {
       return c
     }
@@ -38,7 +38,7 @@ if (!Object.merge) {
     return c
   }
 }
-function parse_component(src, file) {
+function parse_component (src, file) {
   var parts = parse_template(src)
   var scriptComponent = hasOwnProperty(parts, 'script') ? parts['script'] : null
   var templateComponent = hasOwnProperty(parts, 'template') ? parts['template'] : null
@@ -49,7 +49,7 @@ function parse_component(src, file) {
   var style = trim(styleComponent ? styleComponent.content : '')
   if (!script && !template) {
     return {
-      render: function(h) {
+      render: function (h) {
         return h('')
       }
     }
@@ -89,10 +89,10 @@ function parse_component(src, file) {
     wrapper_call({
       'module': module,
       'exports': module.exports,
-      'Component': function(file_) {
+      'Component': function (file_) {
         file_ = compile_path(dir, file_)
-        return function(resolve, reject) {
-          getComponentContents(file_).then(function(res) {
+        return function (resolve, reject) {
+          getComponentContents(file_).then(function (res) {
             if (!res) return
             resolve(parse_component(res, file_))
           })
@@ -111,19 +111,19 @@ function parse_component(src, file) {
   return options
 }
 var CACHES__ = {}
-function getComponentContents($url, options) {
+function getComponentContents ($url, options) {
   if (CACHES__.hasOwnProperty($url) && CACHES__[$url]) {
     return Promise.resolve(CACHES__[$url])
   }
   return axios.get($url, Object.merge({
     responseType: 'text',
     ignoreInterceptors: true
-  }, options.axios || {})).then(function(response) {
+  }, options.axios || {})).then(function (response) {
     if (response.status >= 400 || !response.data) return null
     return CACHES__[$url] = response.data
   }).catch(res => null)
 }
-export function registerComponent(name, value, options) {
+export function registerComponent (name, value, options) {
   if (value === undefined) value = name
   if (!value) return
   if (typeof value === 'function' || typeof value === 'object') {
@@ -136,12 +136,12 @@ export function registerComponent(name, value, options) {
   }
   throw new Error('不支持的数据类型')
 }
-export function createComponent(file, options) {
-  return function(resolve, reject) {
-    getComponentContents(file, options || {}).then(function(res) {
+export function createComponent (file, options) {
+  return function (resolve, reject) {
+    getComponentContents(file, options || {}).then(function (res) {
       if (!res) {
-        reject && reject();
-        return;
+        reject && reject()
+        return
       }
       resolve(parse_component(res, file))
     })
