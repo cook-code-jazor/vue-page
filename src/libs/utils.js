@@ -1,7 +1,7 @@
 
 export var toString = Object.prototype.toString
 
-export function compile_path(a, b) {
+export function compile_path (a, b) {
   if (!a) return b
   if (!b) return a
   if (a.substr(a.length - 1) !== '/') a += '/'
@@ -9,11 +9,11 @@ export function compile_path(a, b) {
   return a + b
 }
 
-export function trim(src) {
+export function trim (src) {
   if (!src) return src
   return src.replace(/^\s+/, '').replace(/\s+$/, '')
 }
-export function merge(a, b) {
+export function merge (a, b) {
   var options = {}
   var key
   for (key in a) {
@@ -28,17 +28,17 @@ export function merge(a, b) {
   }
   return options
 }
-export function hasOwnProperty(obj, attr) {
+export function hasOwnProperty (obj, attr) {
   return Object.prototype.hasOwnProperty.call(obj, attr)
 }
 
-export function getType(instance) {
+export function getType (instance) {
   return toString.apply(instance).replace(/\[object (.+?)\]/, '$1').toLowerCase()
 }
 
-export function deepClone(source) {
+export function deepClone (source) {
   var targetObj = source.constructor === Array ? [] : {}
-  Object.keys(source).forEach(function(key) {
+  Object.keys(source).forEach(function (key) {
     if (source[key] && typeof source[key] === 'object') {
       targetObj[key] = deepClone(source[key])
     } else {
@@ -47,7 +47,7 @@ export function deepClone(source) {
   })
   return targetObj
 }
-export function wrapper_call(args, body) {
+export function wrapper_call (args, body) {
   var argNames = []
   var argValues = []
 
