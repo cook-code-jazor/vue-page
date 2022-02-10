@@ -41,22 +41,21 @@ const mergeOptions = (a, b) => {
   return a
 }
 
-function createApp (resolve, options) {
-  options = options || { viewRoot: '/', viewSuffix: '.html' }
-
-  resolve(createVue, createStore, createRouter, createViewParser(options), Vue)
+function createApp (resolve) {
+  resolve(createVue, createStore, createRouter, createViewParser, Vue)
 }
 
 window.quickStart = function (routes, store, options) {
   options = mergeOptions({ viewRoot: '/views', viewSuffix: '.html' }, (typeof routes === 'string' ? store : options) || {})
 
-  const bootstrap = typeof routes === 'string' ? function (createVue, createStore, createRouter, view) {
+  const bootstrap = typeof routes === 'string' ? function (createVue, createStore, createRouter, createViewParser) {
+    const view = createViewParser(options)
     const app = view.component(routes)
     createVue({
       el: '#app',
       render: h => h(app)
     })
-  } : function (createVue, createStore, createRouter, view) {
+  } : function (createVue, createStore, createRouter, createViewParser) {
     createVue({
       el: '#app',
       router: createRouter(routes),
@@ -65,7 +64,7 @@ window.quickStart = function (routes, store, options) {
     })
   }
 
-  return createApp(bootstrap, options)
+  return createApp(bootstrap)
 }
 createApp.require = function (location, argvs) {
   return Axios.get(location).then(res => {
