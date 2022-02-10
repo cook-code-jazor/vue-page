@@ -109,19 +109,18 @@ function queryString (search, opts) {
 
 window.Vue = Vue
 
-if (!window.Jazor) {
-  window.Jazor = {}
-}
+if (!window.Jazor) window.Jazor = {}
+
+window.Jazor.Axios = Axios
+window.Jazor.Vue = Vue
+window.Jazor.createAxios = createClient
+window.Jazor.queryString = queryString
+window.Jazor.qs = qs
 window.Jazor.SPWA = {
   createApp,
   createComponent,
   registerComponent,
   Route: RouteGenerator(),
-  Axios,
-  qs,
-  Vue,
   Store,
-  Router,
-  queryString,
-  createAxios: createClient
+  Router
 }
