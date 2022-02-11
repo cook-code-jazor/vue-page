@@ -34,15 +34,7 @@ module.exports = {
       filename: 'index.html',
       title: 'VuePage',
       scriptLoading: 'blocking'
-    }),
-    new CopyPlugin(
-      {
-        patterns: [
-          { from: './public/web.config', to: './web.config' },
-          { from: './public/vendor', to: './vendor' },
-          { from: './public/views', to: './views' }
-        ]
-      })
+    })
   ],
   output: {
     filename: 'statics/create-app.js?[fullhash:8]',

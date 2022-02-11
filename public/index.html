@@ -10,36 +10,5 @@
 
 <body>
   <div id="app"></div>
-  <script>
-    function createRoutes(view) {
-      Route('/', view('/index'));
-      Route('/user', view('/user'));
-
-      Route('/manage', view('/manage/layout'), '/manage/index').group(function () {
-        Route('index', view('/manage/index'))
-        Route('users', view('/manage/users'))
-      })
-      return Route.create();
-    }
-
-    function bootstrap(createVue, createStore, createRouter, view) {
-      const app = view.component('/app');
-      createVue({
-        el: '#app',
-        router: createRouter(createRoutes(view)),
-        render: h => h(app)
-      });
-    }
-    Vue.component('test', {
-      render(h) {
-        return h('span', this.$slots.default)
-      }
-    });
-    createApp.require('/vendor/element-ui/index.js').then(function (ELEMENT) {
-      ELEMENT.install(Vue)
-      const options = {viewRoot: '/views', viewSuffix: '.html'}
-      createApp(bootstrap , options)
-    })
-  </script>
 </body>
 </html>
