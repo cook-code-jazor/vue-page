@@ -6,7 +6,7 @@ import './libs/promise.min'
 import Axios from './libs/axios'
 import qs from 'qs'
 import Vue from './vue/vue.min'
-import Store from './vue/vuex.min'
+import Vuex from './vue/vuex.min'
 import Router from './vue/vue-router.min'
 import RouteGenerator from './libs/route-generator'
 import { createComponent, registerComponent } from './libs/cl'
@@ -16,7 +16,7 @@ import createViewParser from './libs/create-view-parser'
 import createClient from './libs/createClient'
 import JUtils from './utils/index'
 
-Vue.use(Store)
+Vue.use(Vuex)
 Vue.use(Router)
 
 const addRoutes = Router.prototype.addRoutes
@@ -26,7 +26,7 @@ Router.prototype.addRoutes = function (routes) {
 }
 
 const createVue = (options) => new Vue(options)
-const createStore = (options) => new Store(options)
+const createStore = (options) => new Vuex.Store(options)
 const createRouter = (options) => {
   if (options && options instanceof Array) {
     routeResolver(options)
@@ -126,6 +126,6 @@ window.Jazor.SPWA = {
   createComponent,
   registerComponent,
   Route: RouteGenerator(),
-  Store,
+  Vuex,
   Router
 }
