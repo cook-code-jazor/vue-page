@@ -10,10 +10,12 @@ import Store from './vue/vuex.min'
 import Router from './vue/vue-router.min'
 import RouteGenerator from './libs/route-generator'
 import { createComponent, registerComponent } from './libs/cl'
-import Utils, { merge } from './libs/utils'
+import Utils, { merge2 } from './libs/utils'
 import routeResolver from './libs/routes-resolver'
 import createViewParser from './libs/create-view-parser'
 import createClient from './libs/createClient'
+import JUtils from './utils/index'
+
 Vue.use(Store)
 Vue.use(Router)
 
@@ -117,7 +119,7 @@ window.Jazor.queryString = queryString
 window.Jazor.qs = qs
 if (!window.Jazor.Utils) window.Jazor.Utils = {}
 
-window.Jazor.Utils = merge(window.Jazor.Utils, Utils)
+merge2(window.Jazor.Utils, JUtils, Utils)
 
 window.Jazor.SPWA = {
   createApp,

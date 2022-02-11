@@ -28,6 +28,17 @@ export function merge (a, b) {
   }
   return options
 }
+export function merge2 (first, ...others) {
+  if (!first || typeof first !== 'object') throw new Error('expect object for argument 1')
+  for (let i = 0; i < others.length; i++) {
+    const argvi = others[i]
+    if (!argvi || typeof argvi !== 'object') continue
+    for (const key in argvi) {
+      if (!hasOwnProperty(argvi, key) || argvi[key] === undefined) continue
+      first[key] = argvi[key]
+    }
+  }
+}
 export function hasOwnProperty (obj, attr) {
   return Object.prototype.hasOwnProperty.call(obj, attr)
 }
@@ -65,6 +76,7 @@ export default {
   trim,
   compile_path,
   merge,
+  merge2,
   hasOwnProperty,
   deepClone,
   wrapper_call,
