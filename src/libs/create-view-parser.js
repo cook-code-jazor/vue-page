@@ -11,6 +11,16 @@ function viewParser (options = { viewRoot: '/', viewSuffix: '.html' }) {
   ctor_.component = function (path, absolute) {
     return createComponent((absolute === true ? path : (viewRoot + path)) + viewSuffix)
   }
+  ctor_.sub = function (path) {
+    let subDir = viewRoot + path
+    if (subDir.substr(subDir.length - 1) !== '/') {
+      subDir += '/'
+    }
+    return viewParser({
+      viewRoot: subDir,
+      viewSuffix: viewSuffix
+    })
+  }
   ctor_.registerGlobalComponent = function (name, path, absolute) {
     if (name instanceof Array) {
       for (let i = 0; i < name.length; i++) {
