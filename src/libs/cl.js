@@ -118,7 +118,7 @@ function getComponentContents ($url, options) {
   return axios.get($url, Object.merge({
     responseType: 'text',
     ignoreInterceptors: true
-  }, options.axios || {})).then(function (response) {
+  }, options || {})).then(function (response) {
     if (response.status >= 400 || !response.data) return null
     return CACHES__[$url] = response.data
   }).catch(res => null)

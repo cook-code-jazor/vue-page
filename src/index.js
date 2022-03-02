@@ -120,7 +120,6 @@ window.Jazor.qs = qs
 if (!window.Jazor.Utils) window.Jazor.Utils = {}
 
 merge2(window.Jazor.Utils, JUtils, Utils)
-
 window.Jazor.SPWA = {
   createApp,
   createComponent,
