@@ -73,11 +73,11 @@ function parse_component (src, file) {
   } catch (e) {
     throw e
   }
-  if (!script.startsWith('export default')) {
-    throw new Error('must export template options from ')
-  }
+  // if (!script.startsWith('export default')) {
+  //   throw new Error('must export template options from ')
+  // }
   // 进行简单二次编译
-  script = script.replace(/^export default/, 'module.exports = ')
+  script = script.replace(/^export default/m, 'module.exports = ')
   script = script.replace(/\bimport(?:\()(.+?)(?:\))/ig, 'Component($1)')
   script = script.replace(/^(?:\s*)import(?:\s+)(\w+)(?:\s+)from(?:\s+)(.+?)/ig, 'var $1 = Component($2)')
   var module = { exports: {}}
