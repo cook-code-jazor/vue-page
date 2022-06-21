@@ -61,6 +61,12 @@ function __constructor () {
         _meta = meta
         return this
       },
+      setMeta: function (key, value) {
+        if (value === undefined) return this
+        if (!_meta) _meta = {}
+        _meta[key] = value
+        return this
+      },
       group: function (fn) {
         _group = new RouteGroup()
         stacks.push(_group)
